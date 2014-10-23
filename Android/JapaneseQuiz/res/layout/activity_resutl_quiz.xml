@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent" >
+
+    <LinearLayout
+        android:id="@+id/result_header_layout"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingBottom="5.0dip" >
+
+        <LinearLayout
+            android:id="@+id/result_layout"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="5.0dip"
+            android:layout_marginLeft="5.0dip"
+            android:layout_marginRight="5.0dip"
+            android:layout_marginTop="5.0dip"
+            android:weightSum="1.0" >
+
+            <TextView
+                android:id="@+id/quiz_result_total_time"
+                android:layout_width="wrap_content"
+                android:layout_height="fill_parent"
+                android:layout_weight="0.2"
+                android:drawableLeft="@drawable/watch"
+                android:drawablePadding="10.0dip"
+                android:gravity="left|center"
+                android:paddingLeft="10.0dip"
+                android:text="2:03" />
+
+            <TextView
+                android:id="@+id/quiz_result_title"
+                android:layout_width="wrap_content"
+                android:layout_height="fill_parent"
+                android:layout_weight="0.55"
+                android:gravity="center"
+                android:text="KHÔNG ĐẠT	"
+                android:textColor="@color/black"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/quiz_result_mark"
+                android:layout_width="wrap_content"
+                android:layout_height="fill_parent"
+                android:layout_weight="0.25"
+                android:gravity="center"
+                android:text="1/30"
+                android:textSize="23.0sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/filter_result_layout"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="20.0dip"
+            android:layout_marginRight="20.0dip"
+            android:weightSum="1.0" >
+
+            <Button
+                android:id="@+id/quiz_result_total_button"
+                android:layout_width="wrap_content"
+                android:layout_height="fill_parent"
+                android:layout_weight="0.25"
+                android:drawableLeft="@drawable/sum"
+                android:drawablePadding="10.0dip"
+                android:gravity="left|center"
+                android:paddingLeft="10.0dip" />
+
+            <Button
+                android:id="@+id/quiz_result_right_button"
+                android:layout_width="wrap_content"
+                android:layout_height="fill_parent"
+                android:layout_weight="0.25"
+                android:drawableLeft="@drawable/right_mark"
+                android:drawablePadding="10.0dip"
+                android:gravity="left|center"
+                android:paddingLeft="10.0dip" />
+
+            <Button
+                android:id="@+id/quiz_result_wrong_button"
+                android:layout_width="wrap_content"
+                android:layout_height="fill_parent"
+                android:layout_weight="0.25"
+                android:drawableLeft="@drawable/wrong_mark"
+                android:drawablePadding="10.0dip"
+                android:gravity="left|center"
+                android:paddingLeft="10.0dip" />
+
+            <Button
+                android:id="@+id/quiz_result_unanswered_button"
+                android:layout_width="wrap_content"
+                android:layout_height="fill_parent"
+                android:layout_weight="0.25"
+                android:drawableLeft="@drawable/exclamation_mark"
+                android:drawablePadding="10.0dip"
+                android:gravity="left|center"
+                android:paddingLeft="10.0dip" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <GridView
+        android:id="@+id/quiz_result_detail_grid"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/adView"
+        android:layout_below="@+id/result_header_layout"
+        android:layout_marginTop="5.0dip"
+        android:horizontalSpacing="5.0dip"
+        android:numColumns="3"
+        android:paddingBottom="5.0dip"
+        android:paddingLeft="5.0dip"
+        android:paddingTop="5.0dip"
+        android:scrollbarStyle="outsideInset"
+        android:smoothScrollbar="true"
+        android:verticalSpacing="5.0dip" />
+
+</RelativeLayout>
