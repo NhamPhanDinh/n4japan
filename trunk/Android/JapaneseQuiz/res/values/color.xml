@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <color name="blue">#1687ca</color>
+    <color name="white">#ffffff</color>
+    <color name="red">#db4937</color>
+    <color name="blue_nhat">#c5eaf8</color>
+    <color name="grey">#D0D0D0</color>
+    <color name="grey_trans">#AAD0D0D0</color>
+    <color name="black">#000000</color>
+    <color name="black_nhat">#66000000</color>
+    <color name="black_slide_menu">#303030</color>
+    <color name="yellow_menu">#FFE97F</color>
+    <color name="pink">#ff7f7f</color>
+    <color name="green">#98eb9d</color>
+
+</resources>
