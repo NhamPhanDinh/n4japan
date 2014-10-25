@@ -7,17 +7,26 @@ import android.content.DialogInterface.OnClickListener;
 
 public abstract class DialogNotify extends AlertDialog.Builder {
 
+	String tile;
 	String content;
+	String okTitle;
+	String cancelTitle;
 
 	public abstract void onOKClick();
 
 	public abstract void onCancelClick();
 
-	public DialogNotify(Context arg0, String content) {
+	public DialogNotify(Context arg0, String tile, String content,
+			String okTitle, String cancelTitle) {
 		super(arg0);
 		this.content = content;
+		this.tile = tile;
+		this.okTitle = okTitle;
+		this.cancelTitle = cancelTitle;
+		setIcon(android.R.drawable.stat_sys_warning);
+		setTitle(tile);
 		setMessage(content);
-		setNegativeButton("OK", new OnClickListener() {
+		setNegativeButton(okTitle, new OnClickListener() {
 
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
@@ -26,7 +35,7 @@ public abstract class DialogNotify extends AlertDialog.Builder {
 			}
 		});
 
-		setNeutralButton("Cancel", new OnClickListener() {
+		setNeutralButton(cancelTitle, new OnClickListener() {
 
 			@Override
 			public void onClick(DialogInterface dialog, int which) {

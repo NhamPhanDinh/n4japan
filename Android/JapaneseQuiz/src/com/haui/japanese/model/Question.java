@@ -4,6 +4,7 @@ import java.io.Serializable;
 
 public class Question implements Serializable {
 
+	int id;
 	String year;
 	int group_id;
 	String group_name;
@@ -24,6 +25,14 @@ public class Question implements Serializable {
 		super();
 		answer_choose = -1;
 		isAnswerTrue = false;
+	}
+
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
 	}
 
 	public String getYear() {
@@ -153,6 +162,5 @@ public class Question implements Serializable {
 	public void setCompare(boolean isCompare) {
 		this.isCompare = isCompare;
 	}
-
 
 }

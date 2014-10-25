@@ -18,6 +18,7 @@
     </GridView>
 
     <Button
+        android:id="@+id/btnFinishQuizMenu"
         android:layout_width="fill_parent"
         android:layout_height="40dp"
         android:layout_alignParentBottom="true"

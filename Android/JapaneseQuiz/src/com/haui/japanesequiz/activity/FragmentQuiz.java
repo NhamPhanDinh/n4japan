@@ -11,6 +11,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.WebView.FindListener;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Toast;
@@ -19,7 +20,7 @@ import android.widget.TextView;
 
 import com.haui.japanese.broadcast.ChooseAnswerBroadCast;
 import com.haui.japanese.model.Question;
-import com.haui.japanese.model.QuestionList;
+import com.haui.japanese.model.DoQuiz;
 import com.haui.japanese.view.ResizableImageView;
 import com.haui.japanesequiz.activity.R;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
@@ -31,7 +32,7 @@ import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
 public class FragmentQuiz extends Fragment {
 
 	Question question;
-	TextView tvQuestion, tvPharagrahp;
+	TextView tvQuestion, tvPharagrahp, tvGroup;
 	ResizableImageView imgQuestion;
 	RadioGroup dapan;
 	RadioButton dapan1, dapan2, dapan3, dapan4;
@@ -39,50 +40,92 @@ public class FragmentQuiz extends Fragment {
 	DisplayImageOptions option;
 	int position;
 	boolean isCheckAnswer = false;
+	boolean loadData;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater,
 			@Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 		View v = inflater.inflate(R.layout.fragment_question, container, false);
 		initView(v);
-		/*Toast.makeText(getActivity(), "on createview" + isCheckAnswer + " "+position,
-				Toast.LENGTH_SHORT).show();*/
-		if (isCheckAnswer) {
-			dapan1.setClickable(false);
-			dapan2.setClickable(false);
-			dapan3.setClickable(false);
-			dapan4.setClickable(false);
-			int traloi = QuestionList.listQuestion.get(position)
-					.getTrue_answer();
-			switch (traloi) {
+		/*
+		 * Toast.makeText(getActivity(), "on createview" + isCheckAnswer +
+		 * " "+position, Toast.LENGTH_SHORT).show();
+		 */
+		if (!loadData) {
 
-			case 1:
-				dapan1.setTextColor(Color.BLUE);
-				break;
-			case 2:
-				dapan2.setTextColor(Color.BLUE);
-				break;
-			case 3:
-				dapan3.setTextColor(Color.BLUE);
-				break;
-			case 4:
-				dapan4.setTextColor(Color.BLUE);
-				break;
+			showAnswer();
+
+		} else {
+			if (isCheckAnswer) {
+				showAnswer();
+			} else {
+				dapan1.setClickable(true);
+				dapan2.setClickable(true);
+				dapan3.setClickable(true);
+				dapan4.setClickable(true);
 			}
-		}else{
-			dapan1.setClickable(true);
-			dapan2.setClickable(true);
-			dapan3.setClickable(true);
-			dapan4.setClickable(true);
 		}
 
 		return v;
 	}
 
-	public static FragmentQuiz newInstance(int position) {
+	void showAnswer() {
+
+		dapan1.setClickable(false);
+		dapan2.setClickable(false);
+		dapan3.setClickable(false);
+		dapan4.setClickable(false);
+
+		// Tô đỏ lựa chọn
+		int luaChon = DoQuiz.exam.listQuestion.get(position).getAnswer_choose();
+		switch (luaChon) {
+
+		case 1:
+			dapan1.setTextColor(Color.RED);
+			dapan1.setChecked(true);
+			break;
+		case 2:
+			dapan2.setTextColor(Color.RED);
+			dapan2.setChecked(true);
+			break;
+		case 3:
+			dapan3.setTextColor(Color.RED);
+			dapan3.setChecked(true);
+			break;
+		case 4:
+			dapan4.setTextColor(Color.RED);
+			dapan4.setChecked(true);
+			break;
+		default:
+
+			break;
+		}
+
+		// tô xanh đáp án
+		int traloi = DoQuiz.exam.listQuestion.get(position).getTrue_answer();
+		switch (traloi) {
+
+		case 1:
+			dapan1.setTextColor(Color.BLUE);
+			break;
+		case 2:
+			dapan2.setTextColor(Color.BLUE);
+			break;
+		case 3:
+			dapan3.setTextColor(Color.BLUE);
+			break;
+		case 4:
+			dapan4.setTextColor(Color.BLUE);
+			break;
+		}
+
+	}
+
+	public static FragmentQuiz newInstance(int position, boolean loadData) {
 		FragmentQuiz fragment = new FragmentQuiz();
-		fragment.setQuestion(QuestionList.listQuestion.get(position));
+		fragment.setQuestion(DoQuiz.exam.listQuestion.get(position));
 		fragment.setPosition(position);
+		fragment.setLoadData(loadData);
 		return fragment;
 
 	}
@@ -95,6 +138,8 @@ public class FragmentQuiz extends Fragment {
 		tvQuestion = (TextView) v.findViewById(R.id.tvQuestion);
 		imgQuestion = (ResizableImageView) v.findViewById(R.id.imgQuestion);
 		tvPharagrahp = (TextView) v.findViewById(R.id.tvPharagrahp);
+		tvGroup=(TextView) v.findViewById(R.id.tvGroup);
+		
 		dapan = (RadioGroup) v.findViewById(R.id.dapan);
 		dapan1 = (RadioButton) v.findViewById(R.id.dapan1);
 		dapan2 = (RadioButton) v.findViewById(R.id.dapan2);
@@ -113,17 +158,30 @@ public class FragmentQuiz extends Fragment {
 				.bitmapConfig(Bitmap.Config.RGB_565).considerExifParams(true)
 				.displayer(new FadeInBitmapDisplayer(300)).build();
 		//
-		if (question.getPharagraph().trim().equals("")) {
+		if (question.getPharagraph().equals("null")) {
 			tvPharagrahp.setVisibility(View.GONE);
 		} else {
 			tvPharagrahp.setText(question.getPharagraph());
 		}
+		
+		if(question.getGroup_name().equals("null")){
+			tvGroup.setVisibility(View.GONE);
+		}else{
+			tvGroup.setVisibility(View.VISIBLE);
+		}
+		
+		if(question.getQuestion().equals("null")){
+			tvQuestion.setVisibility(View.GONE);
+		}else{
+			tvQuestion.setVisibility(View.VISIBLE);
+		}
 
 		tvQuestion.setText(question.getQuestion());
-		if (question.getImage() != null || !question.getImage().equals("null")) {
-			// loader.displayImage(question.getImage(), imgQuestion);
-		} else {
+		if (question.getImage().equals("null")) {
 			imgQuestion.setVisibility(View.GONE);
+
+		} else {
+			loader.displayImage(question.getImage(), imgQuestion);
 		}
 
 		dapan1.setText(question.getAnswer_1());
@@ -135,6 +193,7 @@ public class FragmentQuiz extends Fragment {
 
 			@Override
 			public void onCheckedChanged(RadioGroup group, int checkedId) {
+				// tăng biến số câu đã làm
 
 				switch (checkedId) {
 				case R.id.dapan1:
@@ -150,12 +209,18 @@ public class FragmentQuiz extends Fragment {
 					question.setAnswer_choose(4);
 					break;
 				}
+
+				// Gửi thông báo cho MenuFragment để cập nhật lại các ô màu câu
+				// hỏi
 				Intent intent = new Intent("com.haui.japanese.ANSWER_CLICK");
 				intent.putExtra("fragment", 0);
-				QuestionList.listQuestion.set(position, question);
+				DoQuiz.exam.listQuestion.set(position, question);
 				getActivity().sendBroadcast(intent);
 
-				if (!QuestionList.listQuestion.get(position).isCompare()) {
+				// Kiểm tra nếu câu hỏi tại vị trí position nếu chưa được so
+				// sánh đáp án thì gửi thông báo
+				// gồm vị trí câu hỏi đến QuizActivity để tiến hành cập nhật
+				if (!DoQuiz.exam.listQuestion.get(position).isCompare()) {
 					Intent intent2 = new Intent("com.haui.japanese.PAGER_CLICK");
 					intent2.putExtra("fragment", 0);
 					intent2.putExtra("position", position);
@@ -166,27 +231,41 @@ public class FragmentQuiz extends Fragment {
 		});
 	}
 
+	/**
+	 * Broadcast nhận sự kiện từ bên QuizActivity thông báo cho việc cập nhật
+	 * giao diện câu hỏi (câu đã làm thì k được làm lại nữa)
+	 */
 	ChooseAnswerBroadCast broadCast = new ChooseAnswerBroadCast() {
 
 		@Override
 		public void onReceive(Context context, Intent intent) {
 
-			if (!isCheckAnswer && intent.getExtras().getInt("position")==position) {
+			// kiểm tra nếu chưa kiểm tra đáp án và tại câu hỏi vị trí trùng với
+			// câu hỏi của fragment này thì tiến hành không cho click radio và
+			// hiển thị ra đáp án
+			if (!isCheckAnswer
+					&& intent.getExtras().getInt("position") == position) {
 
 				int fragment = intent.getExtras().getInt("fragment");
 				if (fragment == 1) {
-					/*Toast.makeText(getActivity(), "check answer "+position,
-							Toast.LENGTH_SHORT).show();*/
-					if (QuestionList.listQuestion.get(position)
-							.getAnswer_choose() != -1) {
+					if (DoQuiz.exam.listQuestion.get(position).getAnswer_choose() != -1) {
+
+						if (!question.isAnswerTrue()) {
+							DoQuiz.exam.scoreWrong++;
+							QuizActivity.tvScore
+									.setText(DoQuiz.exam.scoreWrong + "");
+						}
+
+						// vô hiệu hóa click các radio
 						dapan1.setClickable(false);
 						dapan2.setClickable(false);
 						dapan3.setClickable(false);
 						dapan4.setClickable(false);
-						int traloi = QuestionList.listQuestion.get(position)
+						int traloi = DoQuiz.exam.listQuestion.get(position)
 								.getTrue_answer();
-						switch (traloi) {
 
+						// kiểm tra đáp án để bôi xanh đáp án
+						switch (traloi) {
 						case 1:
 							dapan1.setTextColor(Color.BLUE);
 							break;
@@ -231,7 +310,14 @@ public class FragmentQuiz extends Fragment {
 	public void onSaveInstanceState(Bundle outState) {
 		// TODO Auto-generated method stub
 		super.onSaveInstanceState(outState);
-		/*Toast.makeText(getActivity(), "onsavestate", Toast.LENGTH_SHORT).show();*/
+	}
+
+	public boolean isLoadData() {
+		return loadData;
+	}
+
+	public void setLoadData(boolean loadData) {
+		this.loadData = loadData;
 	}
 
 }

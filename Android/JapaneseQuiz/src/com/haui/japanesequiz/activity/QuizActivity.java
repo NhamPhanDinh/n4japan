@@ -31,7 +31,8 @@ import com.haui.japanese.broadcast.MenuClickBroadCast;
 import com.haui.japanese.broadcast.PagerSelectBroadCast;
 import com.haui.japanese.controller.JsonParse;
 import com.haui.japanese.model.Question;
-import com.haui.japanese.model.QuestionList;
+import com.haui.japanese.model.DoQuiz;
+import com.haui.japanese.util.CommonUtils;
 import com.haui.japanese.view.DialogNotify;
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu.CanvasTransformer;
@@ -44,15 +45,21 @@ public class QuizActivity extends ActionBarActivity {
 	ViewPager pager;
 	TitlePageIndicator indicator;
 	QuizViewPagerAdapter pagerAdapter;
-	//List<Question> listQuestion;
-	TextView tvScore;
+	// List<Question> listQuestion;
+	public static TextView tvScore;
 	TextView tvSumaryAnswer, tvTime;
 	Timer timer;
 	Handler handler;
-	long time = 200000;
+	long time = 180000;
 	int lastSelect;
-	//Question questionSelect = null;
-	boolean nhan = false;;
+	// Question questionSelect = null;
+	boolean nhan = false;
+
+	/**
+	 * Biến cờ cho biết có load lại dữ liệu lên hay không
+	 */
+	boolean loadData = false;
+	int positionInitPager;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -63,49 +70,72 @@ public class QuizActivity extends ActionBarActivity {
 				getResources().getDrawable(R.color.blue));
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-		loadCustomView();
+		Bundle bd = getIntent().getExtras();
+		loadData = bd.getBoolean("load");
+		positionInitPager = bd.getInt("positionInit", 0);
+
+		if (loadData) {
+			loadQuestion();
+			loadCustomView();
+		}
+
 		initView();
 		loadSlideMenu();
 	}
 
+	/**
+	 * Load câu hỏi từ sdcard
+	 */
 	void loadQuestion() {
 		File file = new File(Environment.getExternalStorageDirectory()
 				+ "/Download/Gra2006.json");
 		Toast.makeText(getApplicationContext(), file.getPath(),
 				Toast.LENGTH_LONG).show();
-		String st = JsonParse.readJsonString(file);
-		QuestionList.listQuestion = JsonParse.listQuestion(file);
+		DoQuiz.exam.listQuestion = JsonParse.listQuestion(file);
+		DoQuiz.exam.scoreWrong = 0;
+		DoQuiz.exam.time = 0;
 	}
 
+	/**
+	 * Khởi tạo các view
+	 */
 	void initView() {
 		pager = (ViewPager) findViewById(R.id.pager);
 		indicator = (TitlePageIndicator) findViewById(R.id.indicator);
 
 		tvSumaryAnswer = (TextView) findViewById(R.id.tvSumaryAnswer);
 		tvTime = (TextView) findViewById(R.id.tvTime);
+		if (!loadData) {
+			tvTime.setVisibility(View.GONE);
+		} else {
+			tvTime.setVisibility(View.VISIBLE);
+		}
 
-		loadQuestion();
-		tvSumaryAnswer.setText("0/" + QuestionList.listQuestion.size());
+		tvSumaryAnswer.setText(DoQuiz.exam.sumaryAnswer + "/"
+				+ DoQuiz.exam.listQuestion.size());
 		pagerAdapter = new QuizViewPagerAdapter(getSupportFragmentManager(),
-				QuestionList.listQuestion);
+				DoQuiz.exam.listQuestion, loadData);
 		pager.setAdapter(pagerAdapter);
+		pager.setCurrentItem(positionInitPager);
 		indicator.setOnPageChangeListener(new OnPageChangeListener() {
 
 			@Override
-			public void onPageSelected(int arg0) {
+			public void onPageSelected(int pos) {
 				// TODO Auto-generated method stub
-				
+				if(pos==(DoQuiz.exam.listQuestion.size()-1)){
+					if(	DoQuiz.exam.sumaryAnswer ==DoQuiz.exam.listQuestion.size()){
+						finishQuiz();
+					}
+				}
+
 				if (nhan) {
+					// Gửi thông báo cho FragmentQuiz để cập nhật câu vừa làm
 					Intent intent = new Intent("com.haui.japanese.ANSWER_CLICK");
-					QuestionList.listQuestion.get(lastSelect).setCompare(true);
+					DoQuiz.exam.listQuestion.get(lastSelect).setCompare(true);
 					intent.putExtra("fragment", 1);
 					intent.putExtra("position", lastSelect);
-				//	intent.putExtra("position", lastSelect);
-			//		intent.putExtra("question", questionSelect);
 					sendBroadcast(intent);
-					nhan=false;
-			/*		Toast.makeText(getApplicationContext(), "Send from main to menu",
-							Toast.LENGTH_SHORT).show();*/
+					nhan = false;
 				}
 			}
 
@@ -121,7 +151,7 @@ public class QuizActivity extends ActionBarActivity {
 
 			}
 		});
-	
+
 		indicator.setTextColor(getResources().getColor(R.color.black_nhat));
 		indicator.setSelectedColor(getResources().getColor(R.color.black));
 		indicator.setViewPager(pager);
@@ -131,6 +161,50 @@ public class QuizActivity extends ActionBarActivity {
 
 		IntentFilter filter2 = new IntentFilter("com.haui.japanese.PAGER_CLICK");
 		registerReceiver(pagerClickBroadCast, filter2);
+
+	}
+
+	/**
+	 * Handler hiển thị thời gian làm quiz
+	 */
+	private void UpdateTIME() {
+		handler.post(new Runnable() {
+
+			@Override
+			public void run() {
+				tvTime.setText(CommonUtils.getTimeString(time));
+				if (time > 0) {
+					time -= 1000;
+					DoQuiz.exam.time += 1000;
+
+				} else {
+				timer.cancel();
+				Toast.makeText(getApplicationContext(), "Hết thời gian hiển thị kết quả thi",Toast.LENGTH_SHORT).show();
+				DoQuiz.exam.listQuestion.get(lastSelect).setCompare(true);
+				timer.cancel();
+				Intent itResult = new Intent(QuizActivity.this,
+						ResultQuiz.class);
+				startActivity(itResult);
+				finish();
+				}
+
+			}
+		});
+
+	}
+
+	/**
+	 * khởi tạo view điểm trên actionbar
+	 */
+	void loadCustomView() {
+		View v = getLayoutInflater().inflate(R.layout.custom_text_actionbar,
+				null);
+		LayoutParams layout = new LayoutParams(LayoutParams.WRAP_CONTENT,
+				LayoutParams.WRAP_CONTENT, Gravity.RIGHT
+						| Gravity.CENTER_VERTICAL);
+		tvScore = (TextView) v.findViewById(R.id.tvScore);
+		getSupportActionBar().setCustomView(v, layout);
+		getSupportActionBar().setDisplayShowCustomEnabled(true);
 
 		handler = new Handler();
 		timer = new Timer();
@@ -143,59 +217,12 @@ public class QuizActivity extends ActionBarActivity {
 			}
 
 		}, 1000, 1000);
-
 	}
 
-	private void UpdateTIME() {
-		handler.post(new Runnable() {
-
-			@Override
-			public void run() {
-				tvTime.setText(getTimeString(time));
-				if (time > 0) {
-					time -= 1000;
-
-				} else {
-					timer.cancel();
-					DialogNotify dialog = new DialogNotify(QuizActivity.this,
-							"Hết giờ !") {
-
-						@Override
-						public void onOKClick() {
-
-						}
-
-						@Override
-						public void onCancelClick() {
-							// TODO Auto-generated method stub
-
-						}
-					};
-				}
-
-			}
-		});
-
-	}
-
-	String getTimeString(long time) {
-		SimpleDateFormat format = new SimpleDateFormat("mm:ss");
-		return format.format(new Date(time));
-	}
-
-	void loadCustomView() {
-		View v = getLayoutInflater().inflate(R.layout.custom_text_actionbar,
-				null);
-		LayoutParams layout = new LayoutParams(LayoutParams.WRAP_CONTENT,
-				LayoutParams.WRAP_CONTENT, Gravity.RIGHT
-						| Gravity.CENTER_VERTICAL);
-		tvScore = (TextView) v.findViewById(R.id.tvScore);
-		getSupportActionBar().setCustomView(v, layout);
-		getSupportActionBar().setDisplayShowCustomEnabled(true);
-	}
-
+	/**
+	 * Khởi tạo slide menu
+	 */
 	void loadSlideMenu() {
-
 		try {
 
 			mTransformer = new CanvasTransformer() {
@@ -220,21 +247,36 @@ public class QuizActivity extends ActionBarActivity {
 			sm.setBehindCanvasTransformer(mTransformer);
 			sm.setMenu(R.layout.menu_frame);
 			getSupportFragmentManager().beginTransaction()
-					.replace(R.id.menu_frame, new MenuFragment())
-					.commit();
+					.replace(R.id.menu_frame, new MenuFragment()).commit();
 		} catch (Exception e) {
 			Toast.makeText(getBaseContext(), e.toString(), Toast.LENGTH_LONG)
 					.show();
 		}
 	}
 
-	private static Interpolator interp = new Interpolator() {
-		@Override
-		public float getInterpolation(float t) {
-			t -= 1.0f;
-			return t * t * t + 1.0f;
-		}
-	};
+	void finishQuiz() {
+		DialogNotify dialog = new DialogNotify(QuizActivity.this,
+				"Kết thúc bài thi", "Bài thi sẽ được kết thúc và chấm điểm",
+				"OK", "Bỏ qua") {
+
+			@Override
+			public void onOKClick() {
+				DoQuiz.exam.listQuestion.get(lastSelect).setCompare(true);
+				timer.cancel();
+				Intent itResult = new Intent(QuizActivity.this,
+						ResultQuiz.class);
+				startActivity(itResult);
+				finish();
+
+			}
+
+			@Override
+			public void onCancelClick() {
+				// TODO Auto-generated method stub
+
+			}
+		};
+	}
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -247,10 +289,19 @@ public class QuizActivity extends ActionBarActivity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		if (item.getItemId() == android.R.id.home) {
 			sm.toggle();
+		} else if (item.getItemId() == R.id.menuCheck) {
+			if (loadData) {
+				finishQuiz();
+			} else {
+				finish();
+			}
 		}
 		return super.onOptionsItemSelected(item);
 	}
 
+	/**
+	 * Broastcast nhận sự kiện click từ bên slide menu
+	 */
 	MenuClickBroadCast menuClickBroadCast = new MenuClickBroadCast() {
 
 		@Override
@@ -258,26 +309,48 @@ public class QuizActivity extends ActionBarActivity {
 			Bundle bd = intent.getExtras();
 			sm.toggle();
 			int positiion = bd.getInt("position");
-			pager.setCurrentItem(positiion);
-			tvScore.setText(positiion + "");
+			if (positiion == -1) {
+				finishQuiz();
+			} else {
+				pager.setCurrentItem(positiion);
+			}
 			super.onReceive(context, intent);
 		}
 
 	};
 
+	/**
+	 * Broadcast nhận sự kiện từ FragmentQuiz tham số truyền sang là vị trị câu
+	 * hỏi vừa click
+	 */
 	PagerSelectBroadCast pagerClickBroadCast = new PagerSelectBroadCast() {
 
 		@Override
 		public void onReceive(Context context, Intent intent) {
-			/*Toast.makeText(getApplicationContext(), "Receive pager click",
-					Toast.LENGTH_SHORT).show();*/
-		lastSelect = intent.getExtras().getInt("position");
-		//	questionSelect = (Question) intent.getExtras().getSerializable(
-				//	"question");
-		//	questionSelect.setCompare(true);
-			nhan=true;
+			lastSelect = intent.getExtras().getInt("position");
+			int numerAnswer = 0;
+			for (Question q : DoQuiz.exam.listQuestion) {
+				if (q.getAnswer_choose() != -1) {
+					numerAnswer++;
+				}
+			}
+			DoQuiz.exam.sumaryAnswer = numerAnswer;
+			tvSumaryAnswer.setText(numerAnswer + "/"
+					+ DoQuiz.exam.listQuestion.size());
+			if(	DoQuiz.exam.sumaryAnswer ==DoQuiz.exam.listQuestion.size()){
+				finishQuiz();
+			}
+			nhan = true;
 			super.onReceive(context, intent);
 		}
 
+	};
+
+	private static Interpolator interp = new Interpolator() {
+		@Override
+		public float getInterpolation(float t) {
+			t -= 1.0f;
+			return t * t * t + 1.0f;
+		}
 	};
 }

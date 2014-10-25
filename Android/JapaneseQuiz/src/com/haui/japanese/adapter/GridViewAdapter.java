@@ -3,7 +3,7 @@ package com.haui.japanese.adapter;
 import java.util.List;
 
 import com.haui.japanese.model.Question;
-import com.haui.japanese.model.QuestionList;
+import com.haui.japanese.model.DoQuiz;
 import com.haui.japanesequiz.activity.R;
 
 import android.content.Context;
@@ -29,7 +29,7 @@ public class GridViewAdapter extends BaseAdapter {
 	@Override
 	public int getCount() {
 		// TODO Auto-generated method stub
-		return QuestionList.listQuestion.size();
+		return DoQuiz.exam.listQuestion.size();
 	}
 
 	@Override
@@ -46,7 +46,7 @@ public class GridViewAdapter extends BaseAdapter {
 
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
-		Question question = QuestionList.listQuestion.get(position);
+		Question question = DoQuiz.exam.listQuestion.get(position);
 		if (convertView == null) {
 			convertView = inflater.inflate(R.layout.menu_item_slide, null);
 		}

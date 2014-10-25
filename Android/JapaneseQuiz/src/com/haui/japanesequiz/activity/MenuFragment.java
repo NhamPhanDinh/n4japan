@@ -1,7 +1,5 @@
 package com.haui.japanesequiz.activity;
 
-import java.util.List;
-
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -10,24 +8,23 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.Toast;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.Button;
 import android.widget.GridView;
 
-import com.haui.japanesequiz.activity.R;
 import com.haui.japanese.adapter.GridViewAdapter;
 import com.haui.japanese.broadcast.ChooseAnswerBroadCast;
-import com.haui.japanese.broadcast.MenuClickBroadCast;
-import com.haui.japanese.model.Question;
 
 public class MenuFragment extends Fragment {
 
 	GridViewAdapter adapter;
+	Button btnFinishQuizMenu;
 
 	public MenuFragment() {
-	
+
 	}
 
 	GridView mGridView;
@@ -46,14 +43,27 @@ public class MenuFragment extends Fragment {
 		getActivity().registerReceiver(broadCast, filter);
 
 		mGridView = (GridView) v.findViewById(R.id.gridViewMenu);
+		btnFinishQuizMenu=(Button) v.findViewById(R.id.btnFinishQuizMenu);
+		btnFinishQuizMenu.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				//gửi thông điệp kết thúc quiz
+				Intent broadcast = new Intent("com.haui.japanese.MENU_CLICK");
+				broadcast.putExtra("position", -1);
+				getActivity().sendBroadcast(broadcast);
+				
+			}
+		});
 		loadList();
 		mGridView.setOnItemClickListener(new OnItemClickListener() {
 
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view,
 					int position, long id) {
-			/*	Toast.makeText(getActivity(), position + "", Toast.LENGTH_SHORT)
-						.show();*/
+
+				// Gửi thông báo vị trị click sang QuizActivity để viewpager
+				// chuyển đến câu hỏi tương ứng
 				Intent broadcast = new Intent("com.haui.japanese.MENU_CLICK");
 				broadcast.putExtra("position", position);
 				getActivity().sendBroadcast(broadcast);
@@ -63,20 +73,23 @@ public class MenuFragment extends Fragment {
 		return v;
 	}
 
+	/**
+	 * Tải lại danh sách hiển thị gridview
+	 */
 	void loadList() {
 		adapter = new GridViewAdapter(getActivity());
 		mGridView.setAdapter(adapter);
 	}
 
+	/**
+	 * Broadcast nhận thông báo cập nhật hiển thị gridview từ các acitiviy và
+	 * fragment khác
+	 */
 	ChooseAnswerBroadCast broadCast = new ChooseAnswerBroadCast() {
 
 		@Override
 		public void onReceive(Context context, Intent intent) {
-		//	Bundle bd = intent.getExtras();
-			//int position = bd.getInt("position");
-		//	Question question = (Question) bd.getSerializable("question");
-			//list.set(position, question);
-		//	Toast.makeText(getActivity(), "reload menu slide", Toast.LENGTH_SHORT).show();
+
 			loadList();
 			super.onReceive(context, intent);
 		}

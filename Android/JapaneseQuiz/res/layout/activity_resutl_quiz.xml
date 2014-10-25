@@ -21,7 +21,7 @@
             android:weightSum="1.0" >
 
             <TextView
-                android:id="@+id/quiz_result_total_time"
+                android:id="@+id/tvResultTime"
                 android:layout_width="wrap_content"
                 android:layout_height="fill_parent"
                 android:layout_weight="0.2"
@@ -32,7 +32,7 @@
                 android:text="2:03" />
 
             <TextView
-                android:id="@+id/quiz_result_title"
+                android:id="@+id/tvResultTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="fill_parent"
                 android:layout_weight="0.55"
@@ -42,7 +42,7 @@
                 android:textStyle="bold" />
 
             <TextView
-                android:id="@+id/quiz_result_mark"
+                android:id="@+id/tvResultScore"
                 android:layout_width="wrap_content"
                 android:layout_height="fill_parent"
                 android:layout_weight="0.25"
@@ -61,7 +61,7 @@
             android:weightSum="1.0" >
 
             <Button
-                android:id="@+id/quiz_result_total_button"
+                android:id="@+id/btnTotal"
                 android:layout_width="wrap_content"
                 android:layout_height="fill_parent"
                 android:layout_weight="0.25"
@@ -71,7 +71,7 @@
                 android:paddingLeft="10.0dip" />
 
             <Button
-                android:id="@+id/quiz_result_right_button"
+                android:id="@+id/btnCorrect"
                 android:layout_width="wrap_content"
                 android:layout_height="fill_parent"
                 android:layout_weight="0.25"
@@ -81,7 +81,7 @@
                 android:paddingLeft="10.0dip" />
 
             <Button
-                android:id="@+id/quiz_result_wrong_button"
+                android:id="@+id/btnIncorrect"
                 android:layout_width="wrap_content"
                 android:layout_height="fill_parent"
                 android:layout_weight="0.25"
@@ -91,7 +91,7 @@
                 android:paddingLeft="10.0dip" />
 
             <Button
-                android:id="@+id/quiz_result_unanswered_button"
+                android:id="@+id/btnUnAnswer"
                 android:layout_width="wrap_content"
                 android:layout_height="fill_parent"
                 android:layout_weight="0.25"
@@ -103,7 +103,7 @@
     </LinearLayout>
 
     <GridView
-        android:id="@+id/quiz_result_detail_grid"
+        android:id="@+id/gridViewButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_above="@+id/adView"
