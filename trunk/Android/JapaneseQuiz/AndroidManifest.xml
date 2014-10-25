@@ -7,8 +7,12 @@
     <uses-sdk
         android:minSdkVersion="8"
         android:targetSdkVersion="21" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
 
     <application
         android:allowBackup="true"
@@ -26,19 +30,24 @@
         </activity>
         <activity android:name="com.haui.japanesequiz.activity.QuizActivity" >
         </activity>
+        <activity android:name="com.haui.japanesequiz.activity.QuizListenActivity" >
+        </activity>
+        <activity android:name="com.haui.japanesequiz.activity.ResultQuiz" >
+        </activity>
+        <activity android:name="com.haui.japanesequiz.activity.ListExamActivity" >
+        </activity>
 
         <receiver android:name="com.haui.japanese.broadcast.MenuClickBroadCast" >
             <intent-filter>
                 <action android:name="com.haui.japanese.MENU_CLICK" />
             </intent-filter>
         </receiver>
-        
-           <receiver android:name="com.haui.japanese.broadcast.ChooseAnswerBroadCast" >
+        <receiver android:name="com.haui.japanese.broadcast.ChooseAnswerBroadCast" >
             <intent-filter>
                 <action android:name="com.haui.japanese.ANSWER_CLICK" />
             </intent-filter>
         </receiver>
-          <receiver android:name="com.haui.japanese.broadcast.PagerSelectBroadCast" >
+        <receiver android:name="com.haui.japanese.broadcast.PagerSelectBroadCast" >
             <intent-filter>
                 <action android:name="com.haui.japanese.PAGER_CLICK" />
             </intent-filter>

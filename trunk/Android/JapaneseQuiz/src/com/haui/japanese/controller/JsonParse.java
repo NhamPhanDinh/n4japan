@@ -13,37 +13,63 @@ import org.json.JSONObject;
 
 import android.util.Log;
 
+import com.google.gson.JsonObject;
+import com.haui.japanese.model.ListQuiz;
 import com.haui.japanese.model.Question;
+import com.haui.japanese.util.FileUntils;
 
 public class JsonParse {
 
-	public static String readJsonString(File file) {
-		StringBuilder jsonString = new StringBuilder();
-
+	public static String getVersion(File file) {
+		String jsonString = FileUntils.readFileText(file);
 		try {
-			BufferedReader br = new BufferedReader(new FileReader(file));
-			String line;
+			JSONObject obj = new JSONObject(jsonString);
+			String version = obj.getString("version");
+			FileUntils.deleteFile(file);
+			return version;
+		} catch (JSONException e) {
 
-			while ((line = br.readLine()) != null) {
-				jsonString.append(line);
-				jsonString.append('\n');
-			}
-			br.close();
-		} catch (IOException e) {
-			Log.e("file", e.toString());
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return null;
 		}
 
-		return jsonString.toString();
+	}
+
+	public static String getPass(File file) {
+		String pass = FileUntils.readFileText(file);
+		FileUntils.deleteFile(file);
+		return pass;
+	}
+
+	public static ListQuiz getListQuiz(File file) {
+		String jsonString = FileUntils.readFileText(file);
+		ListQuiz listQuiz = new ListQuiz();
+		List<Integer> listYear = new ArrayList<Integer>();
+		try {
+			JSONArray jsonArr = new JSONArray(jsonString);
+			for (int i = 0; i < jsonArr.length(); i++) {
+				JSONObject obj = jsonArr.getJSONObject(i);
+				int year = obj.getInt("list");
+				listYear.add(year);
+			}
+			listQuiz.setListQuiz(listYear);
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return listQuiz;
 	}
 
 	public static List<Question> listQuestion(File file) {
-		String jsonString = readJsonString(file);
+		String jsonString = FileUntils.readFileText(file);
 		List<Question> listQuestion = new ArrayList<Question>();
 		try {
 			JSONArray jsonArray = new JSONArray(jsonString);
 			for (int i = 0; i < jsonArray.length(); i++) {
 				Question qt = new Question();
 				JSONObject obj = jsonArray.getJSONObject(i);
+				qt.setId(i);
 				qt.setYear(obj.getString("year"));
 				qt.setGroup_id(obj.getInt("group_id"));
 				qt.setGroup_name(obj.getString("group_name"));
@@ -61,7 +87,6 @@ public class JsonParse {
 
 				qt.setTrue_answer(obj.getInt("true_answer"));
 				qt.setImage(obj.getString("image"));
-				qt.setQuestion("question");
 				listQuestion.add(qt);
 			}
 

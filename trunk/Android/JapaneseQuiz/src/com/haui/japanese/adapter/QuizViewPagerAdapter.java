@@ -13,16 +13,18 @@ import android.view.View;
 public class QuizViewPagerAdapter extends FragmentPagerAdapter {
 
 	List<Question> listQuestion;
+	boolean loadData;
 
-	public QuizViewPagerAdapter(FragmentManager fm, List<Question> listQuestion) {
+	public QuizViewPagerAdapter(FragmentManager fm, List<Question> listQuestion,boolean loadData) {
 		super(fm);
 		this.listQuestion = listQuestion;
+		this.loadData=loadData;
 	}
 
 	@Override
 	public Fragment getItem(int pos) {
 		// TODO Auto-generated method stub
-		return FragmentQuiz.newInstance(pos);
+		return FragmentQuiz.newInstance(pos,loadData);
 	}
 
 	@Override
@@ -34,7 +36,7 @@ public class QuizViewPagerAdapter extends FragmentPagerAdapter {
 	@Override
 	public CharSequence getPageTitle(int position) {
 		// TODO Auto-generated method stub
-		return "Câu " + (position + 1);
+		return "Câu " + (listQuestion.get(position).getId()+1);
 	}
 
 	@Override

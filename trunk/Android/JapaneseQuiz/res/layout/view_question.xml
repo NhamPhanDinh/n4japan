@@ -7,19 +7,27 @@
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:orientation="vertical" >
-        
+
+        <TextView
+            android:id="@+id/tvGroup"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:padding="7dp"
+            android:text="やまださんは　すずきさんに　えいごを　おしえました。"
+            android:textStyle="bold" />
+
         <TextView
             android:id="@+id/tvPharagrahp"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:padding="5dp"
+            android:padding="7dp"
             android:text="やまださんは　すずきさんに　えいごを　おしえました。" />
 
         <TextView
             android:id="@+id/tvQuestion"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:padding="5dp"
+            android:padding="7dp"
             android:text="やまださんは　すずきさんに　えいごを　おしえました。" />
 
         <com.haui.japanese.view.ResizableImageView
@@ -35,7 +43,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:padding="5dp"
-            android:paddingTop="5dp" >
+            android:paddingTop="10dp" >
 
             <RadioButton
                 android:id="@+id/dapan1"
