@@ -36,9 +36,11 @@
                 android:layout_width="wrap_content"
                 android:layout_height="fill_parent"
                 android:layout_weight="0.55"
+                android:background="@drawable/fail"
                 android:gravity="center"
                 android:text="KHÔNG ĐẠT	"
-                android:textColor="@color/black"
+                android:textColor="@color/white"
+                android:textSize="20dp"
                 android:textStyle="bold" />
 
             <TextView
@@ -58,13 +60,15 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="20.0dip"
             android:layout_marginRight="20.0dip"
+            android:gravity="center_vertical"
             android:weightSum="1.0" >
 
             <Button
                 android:id="@+id/btnTotal"
                 android:layout_width="wrap_content"
-                android:layout_height="fill_parent"
+                android:layout_height="40dp"
                 android:layout_weight="0.25"
+                android:background="@drawable/btn_result_top"
                 android:drawableLeft="@drawable/sum"
                 android:drawablePadding="10.0dip"
                 android:gravity="left|center"
@@ -73,8 +77,10 @@
             <Button
                 android:id="@+id/btnCorrect"
                 android:layout_width="wrap_content"
-                android:layout_height="fill_parent"
+                android:layout_height="40dp"
+                android:layout_margin="3dp"
                 android:layout_weight="0.25"
+                android:background="@drawable/btn_result_top"
                 android:drawableLeft="@drawable/right_mark"
                 android:drawablePadding="10.0dip"
                 android:gravity="left|center"
@@ -83,8 +89,10 @@
             <Button
                 android:id="@+id/btnIncorrect"
                 android:layout_width="wrap_content"
-                android:layout_height="fill_parent"
+                android:layout_height="40dp"
+                android:layout_margin="3dp"
                 android:layout_weight="0.25"
+                android:background="@drawable/btn_result_top"
                 android:drawableLeft="@drawable/wrong_mark"
                 android:drawablePadding="10.0dip"
                 android:gravity="left|center"
@@ -93,8 +101,10 @@
             <Button
                 android:id="@+id/btnUnAnswer"
                 android:layout_width="wrap_content"
-                android:layout_height="fill_parent"
+                android:layout_height="40dp"
+                android:layout_margin="3dp"
                 android:layout_weight="0.25"
+                android:background="@drawable/btn_result_top"
                 android:drawableLeft="@drawable/exclamation_mark"
                 android:drawablePadding="10.0dip"
                 android:gravity="left|center"

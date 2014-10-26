@@ -11,6 +11,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
@@ -19,14 +20,17 @@ import android.widget.RadioGroup.OnCheckedChangeListener;
 import com.haui.japanese.broadcast.ChooseAnswerBroadCast;
 import com.haui.japanese.model.DoQuiz;
 import com.haui.japanese.model.Question;
+import com.haui.japanese.util.CommonUtils;
 import com.haui.japanese.view.ResizableImageView;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
+import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
+import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
 
-public class FragmentQuizListen extends Fragment{
+public class FragmentQuizListen extends Fragment {
 
 	Question question;
 	TextView tvQuestion, tvPharagrahp, tvGroup;
@@ -38,6 +42,7 @@ public class FragmentQuizListen extends Fragment{
 	int position;
 	boolean isCheckAnswer = false;
 	boolean loadData;
+	ProgressBar progressImage;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater,
@@ -132,11 +137,14 @@ public class FragmentQuizListen extends Fragment{
 		IntentFilter filter = new IntentFilter("com.haui.japanese.ANSWER_CLICK");
 		getActivity().registerReceiver(broadCast, filter);
 
+		progressImage = (ProgressBar) v.findViewById(R.id.progressImage);
+		progressImage.setVisibility(View.VISIBLE);
+
 		tvQuestion = (TextView) v.findViewById(R.id.tvQuestion);
 		imgQuestion = (ResizableImageView) v.findViewById(R.id.imgQuestion);
 		tvPharagrahp = (TextView) v.findViewById(R.id.tvPharagrahp);
-		tvGroup=(TextView) v.findViewById(R.id.tvGroup);
-		
+		tvGroup = (TextView) v.findViewById(R.id.tvGroup);
+
 		dapan = (RadioGroup) v.findViewById(R.id.dapan);
 		dapan1 = (RadioButton) v.findViewById(R.id.dapan1);
 		dapan2 = (RadioButton) v.findViewById(R.id.dapan2);
@@ -148,8 +156,8 @@ public class FragmentQuizListen extends Fragment{
 		loader.init(ImageLoaderConfiguration.createDefault(getActivity()));
 
 		option = new DisplayImageOptions.Builder()
-				.showImageForEmptyUri(R.drawable.ic_launcher)
-				.showImageOnFail(R.drawable.ic_launcher)
+				.showImageForEmptyUri(R.drawable.ic_empty)
+				.showImageOnFail(R.drawable.ic_error)
 				.resetViewBeforeLoading(true).cacheOnDisc(true)
 				.imageScaleType(ImageScaleType.EXACTLY_STRETCHED)
 				.bitmapConfig(Bitmap.Config.RGB_565).considerExifParams(true)
@@ -158,27 +166,60 @@ public class FragmentQuizListen extends Fragment{
 		if (question.getPharagraph().equals("null")) {
 			tvPharagrahp.setVisibility(View.GONE);
 		} else {
+			tvPharagrahp.setVisibility(View.VISIBLE);
 			tvPharagrahp.setText(question.getPharagraph());
 		}
-		
-		if(question.getGroup_name().equals("null")){
+
+		if (question.getGroup_name().equals("null")) {
 			tvGroup.setVisibility(View.GONE);
-		}else{
+		} else {
 			tvGroup.setVisibility(View.VISIBLE);
-		}
-		
-		if(question.getQuestion().equals("null")){
-			tvQuestion.setVisibility(View.GONE);
-		}else{
-			tvQuestion.setVisibility(View.VISIBLE);
+			tvGroup.setText(question.getGroup_name());
 		}
 
-		tvQuestion.setText(question.getQuestion());
+		if (question.getQuestion().equals("null")) {
+			tvQuestion.setVisibility(View.GONE);
+		} else {
+			tvQuestion.setVisibility(View.VISIBLE);
+			tvQuestion.setText(question.getQuestion());
+		}
+
 		if (question.getImage().equals("null")) {
 			imgQuestion.setVisibility(View.GONE);
+			progressImage.setVisibility(View.GONE);
 
 		} else {
-			loader.displayImage(question.getImage(), imgQuestion);
+			imgQuestion.setVisibility(View.VISIBLE);
+			loader.displayImage(question.getImage(), imgQuestion,
+					new ImageLoadingListener() {
+
+						@Override
+						public void onLoadingStarted(String imageUri, View view) {
+							progressImage.setVisibility(View.VISIBLE);
+
+						}
+
+						@Override
+						public void onLoadingFailed(String imageUri, View view,
+								FailReason failReason) {
+							progressImage.setVisibility(View.GONE);
+
+						}
+
+						@Override
+						public void onLoadingComplete(String imageUri,
+								View view, Bitmap loadedImage) {
+							progressImage.setVisibility(View.GONE);
+
+						}
+
+						@Override
+						public void onLoadingCancelled(String imageUri,
+								View view) {
+							// TODO Auto-generated method stub
+
+						}
+					});
 		}
 
 		dapan1.setText(question.getAnswer_1());
@@ -245,7 +286,8 @@ public class FragmentQuizListen extends Fragment{
 
 				int fragment = intent.getExtras().getInt("fragment");
 				if (fragment == 1) {
-					if (DoQuiz.exam.listQuestion.get(position).getAnswer_choose() != -1) {
+					if (DoQuiz.exam.listQuestion.get(position)
+							.getAnswer_choose() != -1) {
 
 						if (!question.isAnswerTrue()) {
 							DoQuiz.exam.scoreWrong++;

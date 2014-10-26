@@ -4,6 +4,9 @@ import java.io.File;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import android.app.DownloadManager;
+import android.app.ProgressDialog;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -32,11 +35,17 @@ import com.haui.japanese.adapter.QuizViewListenAdapter;
 import com.haui.japanese.adapter.QuizViewPagerAdapter;
 import com.haui.japanese.broadcast.MenuClickBroadCast;
 import com.haui.japanese.broadcast.PagerSelectBroadCast;
+import com.haui.japanese.controller.DownloadFile;
 import com.haui.japanese.controller.JsonParse;
 import com.haui.japanese.model.DoQuiz;
+import com.haui.japanese.model.Exam;
 import com.haui.japanese.model.Question;
+import com.haui.japanese.sqlite.DBCache;
 import com.haui.japanese.util.CommonUtils;
+import com.haui.japanese.util.FileUntils;
+import com.haui.japanese.util.Variable;
 import com.haui.japanese.view.DialogNotify;
+import com.haui.japanse.cache.PassExtractCache;
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu.CanvasTransformer;
 import com.viewpagerindicator.TitlePageIndicator;
@@ -54,15 +63,22 @@ public class QuizListenActivity extends ActionBarActivity {
 	TextView tvSumaryAnswer, tvTimeCountDown;
 	Timer timer;
 	Handler handler;
-	int time=0;
+	int time = 0;
 	int totalTime;
 	int lastSelect;
 	// Question questionSelect = null;
 	boolean nhan = false;
 	SeekBar seekbar;
 	MediaPlayer mediaPlayer;
-	long startTime=0;
+	long startTime = 0;
 
+	int year;
+	int type;
+	PassExtractCache passExtractCache;
+	DBCache db;
+	ProgressDialog proLoadAudio;
+	String title;
+	String link;
 	/**
 	 * Biến cờ cho biết có load lại dữ liệu lên hay không
 	 */
@@ -77,43 +93,193 @@ public class QuizListenActivity extends ActionBarActivity {
 		getSupportActionBar().setBackgroundDrawable(
 				getResources().getDrawable(R.color.blue));
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
+		passExtractCache = new PassExtractCache(getApplicationContext());
+		db = new DBCache(getApplicationContext());
 		Bundle bd = getIntent().getExtras();
 		loadData = bd.getBoolean("load");
 		positionInitPager = bd.getInt("positionInit", 0);
-
+		year = bd.getInt("year");
+		type = bd.getInt("type");
 		if (loadData) {
-			loadAudio();
+
+			title = "Lis";
+			link = Variable.HOST_DATA + year + "/Listerning/";
 			loadQuestion();
-			loadCustomView();
+
+		} else {
+			initView();
+			loadSlideMenu();
 		}
 
-		initView();
-		loadSlideMenu();
+	}
+
+	String layString(int id) {
+		return getResources().getString(id);
 	}
 
 	/**
 	 * Load câu hỏi từ sdcard
 	 */
 	void loadQuestion() {
-		File file = new File(Environment.getExternalStorageDirectory()
-				+ "/Download/Lis2006.json");
-		Toast.makeText(getApplicationContext(), file.getPath(),
-				Toast.LENGTH_LONG).show();
-		DoQuiz.exam.listQuestion = JsonParse.listQuestion(file);
-		DoQuiz.exam.scoreWrong = 0;
-		DoQuiz.exam.time = 0;
+
+		String title = "Lis";
+		String link = Variable.HOST_DATA + year + "/Listerning/";
+
+		File file = new File(Variable.FILE_DIRECTORY + title + year + ".zip");
+		final File fileJson = new File(Variable.FILE_DIRECTORY + title + year
+				+ ".json");
+
+		if (!file.exists()) {
+
+			if (CommonUtils.isOnline(getApplicationContext())) {
+				DownloadFile downloadZip = new DownloadFile(
+						QuizListenActivity.this, link + title + year + ".zip",
+						title + year + ".zip", layString(R.string.taicauhoi)) {
+
+					@Override
+					public void onDownloadComplete() {
+						File fileDownload = getmFile();
+
+						FileUntils.ExtractFile(fileDownload, new File(
+								Variable.FILE_DIRECTORY), passExtractCache
+								.getPass());
+						DoQuiz.exam = new Exam();
+						DoQuiz.exam.listQuestion = JsonParse.listQuestion(
+								fileJson, year, type);
+						DoQuiz.exam.scoreWrong = 0;
+						DoQuiz.exam.time = 0;
+						if (DoQuiz.exam.getListQuestion() == null) {
+							DialogNotify dialogLoadFail = new DialogNotify(
+									QuizListenActivity.this,
+									layString(R.string.load_data_no_Connect_title),
+									layString(R.string.load_data_error),
+									layString(R.string.closeact)) {
+
+								@Override
+								public void onOKClick() {
+									finish();
+
+								}
+
+								@Override
+								public void onCancelClick() {
+									finish();
+
+								}
+							};
+
+							FileUntils.deleteFile(fileDownload);
+						} else {
+							loadAudio();
+						}
+
+					}
+				};
+				downloadZip.execute();
+			} else {
+
+				DialogNotify dialogNoConnect = new DialogNotify(
+						QuizListenActivity.this,
+						layString(R.string.load_data_no_Connect_title),
+						layString(R.string.load_data_no_Connect_mgs),
+						layString(R.string.closeact)) {
+
+					@Override
+					public void onOKClick() {
+						finish();
+
+					}
+
+					@Override
+					public void onCancelClick() {
+						finish();
+
+					}
+				};
+
+			}
+
+		} else {
+			if (!CommonUtils.isOnline(getApplicationContext())) {
+				DialogNotify dialogNoConnect = new DialogNotify(
+						QuizListenActivity.this, layString(R.string.msg),
+						layString(R.string.image_no_connect),
+						layString(R.string.closeact)) {
+
+					@Override
+					public void onOKClick() {
+
+					}
+
+					@Override
+					public void onCancelClick() {
+
+					}
+				};
+			}
+			FileUntils.ExtractFile(file, new File(Variable.FILE_DIRECTORY),
+					passExtractCache.getPass());
+			DoQuiz.exam.listQuestion = JsonParse.listQuestion(fileJson, year,
+					type);
+			DoQuiz.exam.scoreWrong = 0;
+			DoQuiz.exam.time = 0;
+			loadAudio();
+
+		}
+
 	}
 
 	void loadAudio() {
 
-		File file = new File(Environment.getExternalStorageDirectory()
-				+ "/Download/Emei.MP3");
-		mediaPlayer = MediaPlayer.create(QuizListenActivity.this,
-				Uri.parse(file.getPath()));
-		mediaPlayer.setLooping(false);
+		File file = new File(Variable.FILE_DIRECTORY + title + year + ".mp3");
+		if (!file.exists()) {
+
+			DownloadFile downloadAudio = new DownloadFile(
+					QuizListenActivity.this, link + title + year + ".mp3",
+					title + year + ".mp3", layString(R.string.taiaudio)) {
+
+				@Override
+				public void onDownloadComplete() {
+					File fileDownload = getmFile();
+					mediaPlayer = MediaPlayer.create(QuizListenActivity.this,
+							Uri.parse(fileDownload.getPath()));
+					mediaPlayer.setLooping(false);
+					loadCustomView();
+					initView();
+					loadSlideMenu();
+
+				}
+			};
+			downloadAudio.execute();
+
+		} else {
+
+			mediaPlayer = MediaPlayer.create(QuizListenActivity.this,
+					Uri.parse(file.getPath()));
+			mediaPlayer.setLooping(false);
+			loadCustomView();
+			initView();
+			loadSlideMenu();
+		}
 
 	}
+
+	BroadcastReceiver broadcast = new BroadcastReceiver() {
+
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			proLoadAudio.dismiss();
+			File fileDownload = new File(Variable.FILE_DIRECTORY + title + year
+					+ ".mp3");
+			mediaPlayer = MediaPlayer.create(QuizListenActivity.this,
+					Uri.parse(fileDownload.getPath()));
+			mediaPlayer.setLooping(false);
+			loadCustomView();
+			initView();
+			loadSlideMenu();
+
+		}
+	};
 
 	/**
 	 * Khởi tạo các view
@@ -129,10 +295,10 @@ public class QuizListenActivity extends ActionBarActivity {
 				btnPlay.setClickable(false);
 				btnPlay.setEnabled(false);
 				mediaPlayer.start();
-				totalTime=mediaPlayer.getDuration();
+				totalTime = mediaPlayer.getDuration();
 				tvTimeCountDown.setText(CommonUtils.getTimeString(totalTime));
 				seekbar.setMax(totalTime);
-				
+
 				handler = new Handler();
 				timer = new Timer();
 				timer.schedule(new TimerTask() {
@@ -178,8 +344,12 @@ public class QuizListenActivity extends ActionBarActivity {
 			public void onPageSelected(int pos) {
 				// TODO Auto-generated method stub
 				if (pos == (DoQuiz.exam.listQuestion.size() - 1)) {
-					if (DoQuiz.exam.sumaryAnswer == DoQuiz.exam.listQuestion.size()) {
-						finishQuiz();
+					if (DoQuiz.exam.sumaryAnswer == DoQuiz.exam.listQuestion
+							.size()) {
+						if (loadData) {
+							finishQuiz();
+						}
+
 					}
 				}
 
@@ -223,35 +393,38 @@ public class QuizListenActivity extends ActionBarActivity {
 	 * Handler hiển thị thời gian làm quiz
 	 */
 
-	   
-	   
-	   private void UpdateTIME() {
-			handler.post(new Runnable() {
+	private void UpdateTIME() {
+		handler.post(new Runnable() {
 
-				@Override
-				public void run() {
-					tvTimeCountDown.setText(CommonUtils.getTimeString(totalTime-time));
-					if (time < totalTime-1000) {
-						time =mediaPlayer.getCurrentPosition();
-						seekbar.setProgress(time);
-						DoQuiz.exam.time += 1000;
+			@Override
+			public void run() {
+				tvTimeCountDown.setText(CommonUtils.getTimeString(totalTime
+						- time));
+				if (time < totalTime - 1000) {
+					time = mediaPlayer.getCurrentPosition();
+					seekbar.setProgress(time);
+					DoQuiz.exam.time += 1000;
 
-					} else {
+				} else {
 					timer.cancel();
-					Toast.makeText(getApplicationContext(), "Hết thời gian hiển thị kết quả thi",Toast.LENGTH_SHORT).show();
+					Toast.makeText(getApplicationContext(),
+							layString(R.string.timeout), Toast.LENGTH_SHORT)
+							.show();
 					DoQuiz.exam.listQuestion.get(lastSelect).setCompare(true);
 					timer.cancel();
 					mediaPlayer.release();
 					Intent itResult = new Intent(QuizListenActivity.this,
 							ResultQuiz.class);
+					itResult.putExtra("year", year);
+					itResult.putExtra("type", type);
 					startActivity(itResult);
 					finish();
-					}
-
 				}
-			});
-			
-	   }
+
+			}
+		});
+
+	}
 
 	/**
 	 * khởi tạo view điểm trên actionbar
@@ -265,7 +438,6 @@ public class QuizListenActivity extends ActionBarActivity {
 		tvScore = (TextView) v.findViewById(R.id.tvScore);
 		getSupportActionBar().setCustomView(v, layout);
 		getSupportActionBar().setDisplayShowCustomEnabled(true);
-
 
 	}
 
@@ -306,17 +478,34 @@ public class QuizListenActivity extends ActionBarActivity {
 
 	void finishQuiz() {
 		DialogNotify dialog = new DialogNotify(QuizListenActivity.this,
-				"Kết thúc bài thi", "Bài thi sẽ được kết thúc và chấm điểm",
-				"OK", "Bỏ qua") {
+				layString(R.string.titleketthuc),
+				layString(R.string.msgkethuc), layString(R.string.ok),
+				layString(R.string.cancel)) {
 
 			@Override
 			public void onOKClick() {
 				DoQuiz.exam.listQuestion.get(lastSelect).setCompare(true);
-				timer.cancel();
-				mediaPlayer.stop();
-				mediaPlayer.release();
+				Exam exam = new Exam();
+				exam.setId(year + "-" + type);
+				exam.setListQuestion(DoQuiz.exam.listQuestion);
+				exam.setScoreWrong(DoQuiz.exam.scoreWrong);
+				exam.setSumaryAnswer(DoQuiz.exam.sumaryAnswer);
+				exam.setTime(DoQuiz.exam.time);
+
+				db.inserOrUpdate(year + "-" + type, exam);
+				try {
+					if (mediaPlayer.isPlaying()) {
+						mediaPlayer.stop();
+						mediaPlayer.release();
+						timer.cancel();
+					}
+
+				} catch (Exception e) {
+				}
 				Intent itResult = new Intent(QuizListenActivity.this,
 						ResultQuiz.class);
+				itResult.putExtra("year", year);
+				itResult.putExtra("type", type);
 				startActivity(itResult);
 				finish();
 
@@ -362,7 +551,11 @@ public class QuizListenActivity extends ActionBarActivity {
 			sm.toggle();
 			int positiion = bd.getInt("position");
 			if (positiion == -1) {
-				finishQuiz();
+				if (loadData) {
+					finishQuiz();
+				} else {
+					finish();
+				}
 			} else {
 				pager.setCurrentItem(positiion);
 			}
@@ -397,6 +590,16 @@ public class QuizListenActivity extends ActionBarActivity {
 		}
 
 	};
+
+	@Override
+	public void onBackPressed() {
+		if (loadData) {
+			finishQuiz();
+		} else {
+			finish();
+		}
+
+	}
 
 	private static Interpolator interp = new Interpolator() {
 		@Override

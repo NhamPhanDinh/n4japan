@@ -2,8 +2,8 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     android:background="@color/grey_trans"
+    android:orientation="vertical"
     android:padding="5dp" >
 
     <GridView
@@ -13,7 +13,7 @@
         android:horizontalSpacing="5dp"
         android:numColumns="3"
         android:scrollbars="none"
-        android:verticalSpacing="3dp" >
+        android:verticalSpacing="5dp" >
     </GridView>
 
 </LinearLayout>

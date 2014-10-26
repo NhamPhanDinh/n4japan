@@ -1,52 +1,60 @@
 package com.haui.japanese.model;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class Exam {
-	public static String id = null;
-	public static List<Question> listQuestion = null;
-	public static int scoreWrong = 0;
-	public static long time = 0;
-	public static int sumaryAnswer = 0;
+public class Exam implements Serializable {
+	public String id = null;
+	public List<Question> listQuestion = null;
+	public int scoreWrong = 0;
+	public long time = 0;
+	public int sumaryAnswer = 0;
 
-	public static String getId() {
+	public String getId() {
 		return id;
 	}
 
-	public static void setId(String id) {
-		Exam.id = id;
+	public void setId(String id) {
+		this.id = id;
 	}
 
-	public static List<Question> getListQuestion() {
+	public List<Question> getListQuestion() {
 		return listQuestion;
 	}
 
-	public static void setListQuestion(List<Question> listQuestion) {
-		Exam.listQuestion = listQuestion;
+	public void setListQuestion(List<Question> listQuestion) {
+		this.listQuestion = listQuestion;
 	}
 
-	public static int getScoreWrong() {
+	public int getScoreWrong() {
 		return scoreWrong;
 	}
 
-	public static void setScoreWrong(int scoreWrong) {
-		Exam.scoreWrong = scoreWrong;
+	public void setScoreWrong(int scoreWrong) {
+		this.scoreWrong = scoreWrong;
 	}
 
-	public static long getTime() {
+	public long getTime() {
 		return time;
 	}
 
-	public static void setTime(long time) {
-		Exam.time = time;
+	public void setTime(long time) {
+		this.time = time;
 	}
 
-	public static int getSumaryAnswer() {
+	public int getSumaryAnswer() {
 		return sumaryAnswer;
 	}
 
-	public static void setSumaryAnswer(int sumaryAnswer) {
-		Exam.sumaryAnswer = sumaryAnswer;
+	public void setSumaryAnswer(int sumaryAnswer) {
+		this.sumaryAnswer = sumaryAnswer;
+	}
+
+	@Override
+	public String toString() {
+		return "Exam [id=" + id + ", listQuestion=" + listQuestion
+				+ ", scoreWrong=" + scoreWrong + ", time=" + time
+				+ ", sumaryAnswer=" + sumaryAnswer + "]";
 	}
 
 }

@@ -30,13 +30,25 @@
             android:padding="7dp"
             android:text="やまださんは　すずきさんに　えいごを　おしえました。" />
 
-        <com.haui.japanese.view.ResizableImageView
-            android:id="@+id/imgQuestion"
+        <RelativeLayout
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="10dp"
-            android:src="@drawable/tv200641" >
-        </com.haui.japanese.view.ResizableImageView>
+            android:layout_margin="10dp" >
+
+            <com.haui.japanese.view.ResizableImageView
+                android:id="@+id/imgQuestion"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp" >
+            </com.haui.japanese.view.ResizableImageView>
+
+            <ProgressBar
+                android:id="@+id/progressImage"
+                style="?android:attr/progressBarStyleSmall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true" />
+        </RelativeLayout>
 
         <RadioGroup
             android:id="@+id/dapan"

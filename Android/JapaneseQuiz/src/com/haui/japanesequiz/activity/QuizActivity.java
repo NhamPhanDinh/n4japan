@@ -18,6 +18,7 @@ import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.support.v7.app.ActionBar.LayoutParams;
 import android.support.v7.app.ActionBarActivity;
+import android.text.Html;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -29,11 +30,17 @@ import android.widget.Toast;
 import com.haui.japanese.adapter.QuizViewPagerAdapter;
 import com.haui.japanese.broadcast.MenuClickBroadCast;
 import com.haui.japanese.broadcast.PagerSelectBroadCast;
+import com.haui.japanese.controller.DownloadFile;
 import com.haui.japanese.controller.JsonParse;
+import com.haui.japanese.model.Exam;
 import com.haui.japanese.model.Question;
 import com.haui.japanese.model.DoQuiz;
+import com.haui.japanese.sqlite.DBCache;
 import com.haui.japanese.util.CommonUtils;
+import com.haui.japanese.util.FileUntils;
+import com.haui.japanese.util.Variable;
 import com.haui.japanese.view.DialogNotify;
+import com.haui.japanse.cache.PassExtractCache;
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu.CanvasTransformer;
 import com.viewpagerindicator.TitlePageIndicator;
@@ -50,10 +57,14 @@ public class QuizActivity extends ActionBarActivity {
 	TextView tvSumaryAnswer, tvTime;
 	Timer timer;
 	Handler handler;
-	long time = 180000;
+	long time = 1800000;
 	int lastSelect;
+	int year;
+	int type;
 	// Question questionSelect = null;
 	boolean nhan = false;
+	PassExtractCache passExtractCache;
+	DBCache db;
 
 	/**
 	 * Biến cờ cho biết có load lại dữ liệu lên hay không
@@ -70,30 +81,159 @@ public class QuizActivity extends ActionBarActivity {
 				getResources().getDrawable(R.color.blue));
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
+		passExtractCache = new PassExtractCache(getApplicationContext());
+		db = new DBCache(getApplicationContext());
 		Bundle bd = getIntent().getExtras();
 		loadData = bd.getBoolean("load");
 		positionInitPager = bd.getInt("positionInit", 0);
-
+		year = bd.getInt("year");
+		type = bd.getInt("type");
+		
+		switch (type) {
+		case 1:
+			getSupportActionBar().setTitle(
+					Html.fromHtml("<b><font color='#ffffff'>Đề Vocabulary "
+							+ year + "  </font></b>"));
+			break;
+		case 2:
+			getSupportActionBar().setTitle(
+					Html.fromHtml("<b><font color='#ffffff'>Đề Grammar " + year
+							+ "  </font></b>"));
+			break;
+		case 3:
+			getSupportActionBar().setTitle(
+					Html.fromHtml("<b><font color='#ffffff'>Đề Listening " + year
+							+ "  </font></b>"));
+			break;
+		}
 		if (loadData) {
 			loadQuestion();
-			loadCustomView();
+		} else {
+			initView();
+			loadSlideMenu();
 		}
 
-		initView();
-		loadSlideMenu();
+	}
+
+	String layString(int id) {
+		return getResources().getString(id);
 	}
 
 	/**
 	 * Load câu hỏi từ sdcard
 	 */
 	void loadQuestion() {
-		File file = new File(Environment.getExternalStorageDirectory()
-				+ "/Download/Gra2006.json");
-		Toast.makeText(getApplicationContext(), file.getPath(),
-				Toast.LENGTH_LONG).show();
-		DoQuiz.exam.listQuestion = JsonParse.listQuestion(file);
+		String title = null;
+		String link = null;
+		if (type == 1) {
+			title = "Voc";
+			link = Variable.HOST_DATA + year + "/Vocabulary/";
+		} else if (type == 2) {
+			title = "Gra";
+			link = Variable.HOST_DATA + year + "/Grammar/";
+		}
+
+		File file = new File(Variable.FILE_DIRECTORY + title + year + ".zip");
+		final File fileJson = new File(Variable.FILE_DIRECTORY + title + year
+				+ ".json");
+		if (!file.exists()) {
+
+			if (CommonUtils.isOnline(getApplicationContext())) {
+				DownloadFile downloadZip = new DownloadFile(QuizActivity.this,
+						link + title + year + ".zip", title + year + ".zip",
+						layString(R.string.taicauhoi)) {
+
+					@Override
+					public void onDownloadComplete() {
+						File fileDownload = getmFile();
+						try {
+
+							FileUntils.ExtractFile(fileDownload, new File(
+									Variable.FILE_DIRECTORY), passExtractCache
+									.getPass());
+							loadDataToView(fileJson);
+						} catch (Exception e) {
+
+							DialogNotify dialogLoadFail = new DialogNotify(
+									QuizActivity.this,
+									layString(R.string.load_data_no_Connect_title),
+									layString(R.string.load_data_error),
+									layString(R.string.closeact)) {
+
+								@Override
+								public void onOKClick() {
+									finish();
+									timer.cancel();
+
+								}
+
+								@Override
+								public void onCancelClick() {
+									finish();
+									timer.cancel();
+								}
+							};
+
+							FileUntils.deleteFile(fileDownload);
+						}
+					}
+				};
+				downloadZip.execute();
+			} else {
+				DialogNotify dialogNoConnect = new DialogNotify(
+						QuizActivity.this,
+						layString(R.string.load_data_no_Connect_title),
+						layString(R.string.load_data_no_Connect_mgs),
+						layString(R.string.closeact)) {
+
+					@Override
+					public void onOKClick() {
+						finish();
+
+					}
+
+					@Override
+					public void onCancelClick() {
+						finish();
+
+					}
+				};
+			}
+
+		} else {
+
+			if (!CommonUtils.isOnline(getApplicationContext())) {
+				DialogNotify dialogNoConnect = new DialogNotify(
+						QuizActivity.this, layString(R.string.msg),
+						layString(R.string.image_no_connect),
+						layString(R.string.closeact)) {
+
+					@Override
+					public void onOKClick() {
+
+					}
+
+					@Override
+					public void onCancelClick() {
+
+					}
+				};
+			}
+			FileUntils.ExtractFile(file, new File(Variable.FILE_DIRECTORY),
+					passExtractCache.getPass());
+			loadDataToView(fileJson);
+		}
+
+	}
+
+	void loadDataToView(File fileJson) {
+		DoQuiz.exam = new Exam();
+		DoQuiz.exam.listQuestion = JsonParse.listQuestion(fileJson, year, type);
 		DoQuiz.exam.scoreWrong = 0;
 		DoQuiz.exam.time = 0;
+		loadCustomView();
+		initView();
+		loadSlideMenu();
 	}
 
 	/**
@@ -122,9 +262,13 @@ public class QuizActivity extends ActionBarActivity {
 			@Override
 			public void onPageSelected(int pos) {
 				// TODO Auto-generated method stub
-				if(pos==(DoQuiz.exam.listQuestion.size()-1)){
-					if(	DoQuiz.exam.sumaryAnswer ==DoQuiz.exam.listQuestion.size()){
-						finishQuiz();
+				if (pos == (DoQuiz.exam.listQuestion.size() - 1)) {
+					if (DoQuiz.exam.sumaryAnswer == DoQuiz.exam.listQuestion
+							.size()) {
+						if (loadData) {
+							finishQuiz();
+						}
+
 					}
 				}
 
@@ -178,14 +322,18 @@ public class QuizActivity extends ActionBarActivity {
 					DoQuiz.exam.time += 1000;
 
 				} else {
-				timer.cancel();
-				Toast.makeText(getApplicationContext(), "Hết thời gian hiển thị kết quả thi",Toast.LENGTH_SHORT).show();
-				DoQuiz.exam.listQuestion.get(lastSelect).setCompare(true);
-				timer.cancel();
-				Intent itResult = new Intent(QuizActivity.this,
-						ResultQuiz.class);
-				startActivity(itResult);
-				finish();
+					timer.cancel();
+					Toast.makeText(getApplicationContext(),
+							layString(R.string.timeout), Toast.LENGTH_SHORT)
+							.show();
+					DoQuiz.exam.listQuestion.get(lastSelect).setCompare(true);
+					timer.cancel();
+					Intent itResult = new Intent(QuizActivity.this,
+							ResultQuiz.class);
+					itResult.putExtra("year", year);
+					itResult.putExtra("type", type);
+					startActivity(itResult);
+					finish();
 				}
 
 			}
@@ -256,15 +404,26 @@ public class QuizActivity extends ActionBarActivity {
 
 	void finishQuiz() {
 		DialogNotify dialog = new DialogNotify(QuizActivity.this,
-				"Kết thúc bài thi", "Bài thi sẽ được kết thúc và chấm điểm",
-				"OK", "Bỏ qua") {
+				layString(R.string.titleketthuc),
+				layString(R.string.msgkethuc), layString(R.string.ok),
+				layString(R.string.cancel)) {
 
 			@Override
 			public void onOKClick() {
+
+				Exam exam = new Exam();
+				exam.setId(year + "-" + type);
+				exam.setListQuestion(DoQuiz.exam.listQuestion);
+				exam.setScoreWrong(DoQuiz.exam.scoreWrong);
+				exam.setSumaryAnswer(DoQuiz.exam.sumaryAnswer);
+				exam.setTime(DoQuiz.exam.time);
+				db.inserOrUpdate(year + "-" + type, exam);
 				DoQuiz.exam.listQuestion.get(lastSelect).setCompare(true);
 				timer.cancel();
 				Intent itResult = new Intent(QuizActivity.this,
 						ResultQuiz.class);
+				itResult.putExtra("year", year);
+				itResult.putExtra("type", type);
 				startActivity(itResult);
 				finish();
 
@@ -310,7 +469,11 @@ public class QuizActivity extends ActionBarActivity {
 			sm.toggle();
 			int positiion = bd.getInt("position");
 			if (positiion == -1) {
-				finishQuiz();
+				if (loadData) {
+					finishQuiz();
+				} else {
+					finish();
+				}
 			} else {
 				pager.setCurrentItem(positiion);
 			}
@@ -337,7 +500,7 @@ public class QuizActivity extends ActionBarActivity {
 			DoQuiz.exam.sumaryAnswer = numerAnswer;
 			tvSumaryAnswer.setText(numerAnswer + "/"
 					+ DoQuiz.exam.listQuestion.size());
-			if(	DoQuiz.exam.sumaryAnswer ==DoQuiz.exam.listQuestion.size()){
+			if (DoQuiz.exam.sumaryAnswer == DoQuiz.exam.listQuestion.size()) {
 				finishQuiz();
 			}
 			nhan = true;
@@ -345,6 +508,16 @@ public class QuizActivity extends ActionBarActivity {
 		}
 
 	};
+
+	@Override
+	public void onBackPressed() {
+		if (loadData) {
+			finishQuiz();
+		} else {
+			finish();
+		}
+
+	}
 
 	private static Interpolator interp = new Interpolator() {
 		@Override

@@ -6,6 +6,7 @@ import java.util.Date;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.widget.Toast;
 
 public class CommonUtils {
 	public static String getTimeString(long time) {
@@ -24,5 +25,9 @@ public class CommonUtils {
 		} else {
 		}
 		return true;
+	}
+
+	public static  void showToast(Context context, String st) {
+		Toast.makeText(context, st, Toast.LENGTH_SHORT).show();
 	}
 }

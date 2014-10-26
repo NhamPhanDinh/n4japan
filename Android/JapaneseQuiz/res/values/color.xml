@@ -13,5 +13,9 @@
     <color name="yellow_menu">#FFE97F</color>
     <color name="pink">#ff7f7f</color>
     <color name="green">#98eb9d</color>
+    <color name="orange">#FF9A00</color>
+    <color name="green_nhat">#BAEDD4</color>
+    <color name="red_nhat">#FFC6A8</color>
+    <color name="green_dam">#228624</color>
 
 </resources>
