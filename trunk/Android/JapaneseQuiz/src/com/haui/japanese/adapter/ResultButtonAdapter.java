@@ -21,11 +21,15 @@ public class ResultButtonAdapter extends BaseAdapter {
 	List<Question> list;
 	ActionBarActivity mContext;
 	LayoutInflater inflater;
+	int year;
+	int type;
 
-	public ResultButtonAdapter(List<Question> list, ActionBarActivity mContext) {
+	public ResultButtonAdapter(List<Question> list, ActionBarActivity mContext,int year,int type) {
 		super();
 		this.list = list;
 		this.mContext = mContext;
+		this.year=year;
+		this.type=type;
 		inflater=(LayoutInflater) mContext.getSystemService(mContext.LAYOUT_INFLATER_SERVICE);
 	}
 
@@ -75,6 +79,8 @@ public class ResultButtonAdapter extends BaseAdapter {
 				Intent it = new Intent(mContext, QuizActivity.class);
 				it.putExtra("load", false);
 				it.putExtra("positionInit", qt.getId());
+				it.putExtra("year", year);
+				it.putExtra("type", type);
 				mContext.startActivity(it);
 				
 			}

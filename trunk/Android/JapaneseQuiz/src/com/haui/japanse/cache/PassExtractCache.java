@@ -18,7 +18,7 @@ public class PassExtractCache extends CacheImpl {
 	public String getPass() {
 		if (getData(getKey(), String.class) != null) {
 			String pass = (String) getData(getKey(), String.class);
-			return pass;
+			return pass.trim();
 		} else {
 			return null;
 		}

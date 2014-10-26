@@ -2,6 +2,7 @@ package com.haui.japanese.sqlite;
 
 import com.google.gson.Gson;
 import com.haui.japanese.model.Exam;
+import com.haui.japanese.util.CommonUtils;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -32,7 +33,6 @@ public class DBCache extends SQLiteOpenHelper {
 	@Override
 	public void onCreate(SQLiteDatabase db) {
 		db.execSQL(CREATE);
-		Toast.makeText(context, "create db", Toast.LENGTH_SHORT).show();
 	}
 
 	@Override
@@ -42,7 +42,8 @@ public class DBCache extends SQLiteOpenHelper {
 	}
 
 	public Exam getExam(String id) {
-		String sql = "select * from " + DB_TABLE + " where " + TB_ID + "=" + id;
+		String sql = "select * from " + DB_TABLE + " where " + TB_ID + "= '"
+				+ id + "'";
 		SQLiteDatabase db = this.getReadableDatabase();
 		Cursor c = db.rawQuery(sql, null);
 		if (c.getCount() == 0) {
@@ -50,7 +51,6 @@ public class DBCache extends SQLiteOpenHelper {
 		} else {
 			c.moveToFirst();
 			String data = c.getString(c.getColumnIndex(TB_EXAM));
-			db.close();
 			Gson gson = new Gson();
 			Exam exam = gson.fromJson(data, Exam.class);
 			return exam;
@@ -69,12 +69,16 @@ public class DBCache extends SQLiteOpenHelper {
 		ContentValues cv = new ContentValues();
 		cv.put(TB_ID, id);
 		cv.put(TB_EXAM, json);
-		Exam examCheck = getExam(id);
-		if (examCheck == null) {
+
+		String sql = "select * from " + DB_TABLE + " where " + TB_ID + "= '"
+				+ id + "'";
+		Cursor c = db.rawQuery(sql, null);
+		if (c.getCount() == 0) {
 			return db.insert(DB_TABLE, null, cv);
 		} else {
-			return db.update(DB_TABLE, cv, TB_ID + "=" + id, null);
+			return db.update(DB_TABLE, cv, TB_ID + "='" + id + "'", null);
 		}
+
 	}
 
 }

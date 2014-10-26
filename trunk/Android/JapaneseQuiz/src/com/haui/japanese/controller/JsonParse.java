@@ -17,6 +17,7 @@ import com.google.gson.JsonObject;
 import com.haui.japanese.model.ListQuiz;
 import com.haui.japanese.model.Question;
 import com.haui.japanese.util.FileUntils;
+import com.haui.japanese.util.Variable;
 
 public class JsonParse {
 
@@ -61,7 +62,19 @@ public class JsonParse {
 		return listQuiz;
 	}
 
-	public static List<Question> listQuestion(File file) {
+	public static List<Question> listQuestion(File file, int year, int type) {
+		String link = null;
+		String title = null;
+		if (type == 1) {
+			title = "Voc";
+			link = Variable.HOST_DATA +year+ "/Vocabulary/";
+		} else if (type == 2) {
+			title = "Gra";
+			link = Variable.HOST_DATA + year+"/Grammar/";
+		}else if(type==3){
+			link = Variable.HOST_DATA + year+"/Listerning/";
+		}
+
 		String jsonString = FileUntils.readFileText(file);
 		List<Question> listQuestion = new ArrayList<Question>();
 		try {
@@ -86,7 +99,11 @@ public class JsonParse {
 				}
 
 				qt.setTrue_answer(obj.getInt("true_answer"));
-				qt.setImage(obj.getString("image"));
+				String linkImg=obj.getString("image");
+				if(!linkImg.equals("null")){
+					linkImg=link+linkImg+".png";
+				}
+				qt.setImage(linkImg);
 				listQuestion.add(qt);
 			}
 
@@ -95,7 +112,7 @@ public class JsonParse {
 			e.printStackTrace();
 			Log.e("json", e.toString());
 		}
-
+		FileUntils.deleteFile(file);
 		return listQuestion;
 	}
 

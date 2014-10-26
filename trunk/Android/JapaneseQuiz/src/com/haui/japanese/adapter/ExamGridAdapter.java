@@ -3,6 +3,7 @@ package com.haui.japanese.adapter;
 import java.util.List;
 
 import com.haui.japanese.model.Exam;
+import com.haui.japanese.model.Question;
 import com.haui.japanese.sqlite.DBCache;
 import com.haui.japanesequiz.activity.R;
 
@@ -64,15 +65,34 @@ public class ExamGridAdapter extends BaseAdapter {
 		tvYearExam.setText(year + "");
 		String id = year + "-" + type;
 		Exam exam = db.getExam(id);
+
 		if (exam == null) {
 			tvRightExam.setVisibility(View.INVISIBLE);
 			tvWrongExam.setVisibility(View.INVISIBLE);
+			convertView.setBackgroundResource(R.drawable.exam_undone);
 		} else {
+			convertView.setBackgroundResource(R.drawable.exam_done);
+			List<Question> listQuestion = exam.getListQuestion();
+			int total = listQuestion.size();
+			int unAnswer = 0;
+			for (Question q : listQuestion) {
+				if (q.getAnswer_choose() == -1) {
+					unAnswer++;
+				}
+			}
+			int correct = 0;
+			for (Question q : listQuestion) {
+				if (q.isAnswerTrue()) {
+					correct++;
+				}
+			}
+
+			int incorrect = total - unAnswer - correct;
+
 			tvRightExam.setVisibility(View.VISIBLE);
 			tvWrongExam.setVisibility(View.VISIBLE);
-			tvRightExam.setText(exam.getListQuestion().size()
-					- exam.getScoreWrong() + "");
-			tvWrongExam.setText(exam.getScoreWrong() + "");
+			tvRightExam.setText(correct + "");
+			tvWrongExam.setText(incorrect + "");
 		}
 		return convertView;
 	}

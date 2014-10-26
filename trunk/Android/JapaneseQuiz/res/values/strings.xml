@@ -1,8 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">JapaneseQuiz</string>
+    <string name="app_name">JNPT N4</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
+    <string name="kietradulieu">Đang kiểm tra dữ liệu...</string>
+    <string name="taicauhoi">Đang tải câu hỏi...</string>
+    <string name="taiaudio">Đang tải âm thanh...</string>
+    <string name="taidanhsach">Đang tải danh sách câu hỏi...</string>
+    <string name="titleketthuc">Kết thúc bài thi</string>
+    <string name="msgkethuc">Bài thi sẽ được kết thúc và chấm điểm</string>
+    <string name="msg">Thông báo</string>
+    <string name="nodata">Cần có kết nối mạng để tải dữ liệu lần đầu. Hãy bật kết nối mạng</string>
+    <string name="timeout">Hết thời gian, hiển thị kết quả thi</string>
+    <string name="ok">Đồng ý</string>
+    <string name="cancel">Bỏ qua</string>
+    <string name="close">Đóng ứng dụng</string>
+    <string name="cau">Câu</string>
+    <string name="voc">Vocabulary</string>
+    <string name="gra">Grammar</string>
+    <string name="Lis">Listening</string>
+    <string name="about">About</string>
+    <string name="dethinam">Đề thi năm</string>
+    <string name="loadImageFail">Tải ảnh lỗi, đảm bảo rằng đã nối với Internet</string>
+    <string name="load_data_no_Connect_title">Lỗi tải dữ liệu</string>
+    <string name="load_data_no_Connect_mgs">Cần kết nối mạng để tải dữ liệu cho lần đầu sử dụng</string>
+    <string name="load_data_error">Tải dữ liệu lỗi hoặc bộ đề chưa được hỗ trợ</string>
+    <string name="closeact">Đóng</string>
+    <string name="image_no_connect">Bạn cần kết nối mạng để có thể xem ảnh</string>
+    <string name="info">Thông tin phần mềm</string>
+    <string name="infoContent">Phần mềm JNPT N4 \nVersion </string>
+
+    <string-array name="menuResult">
+        <item>Trở về</item>
+        <item>Xem đáp án</item>
+        <item>Làm lại bài</item>
+    </string-array>
 
 </resources>

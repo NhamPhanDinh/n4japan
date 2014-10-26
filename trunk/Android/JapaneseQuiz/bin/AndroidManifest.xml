@@ -52,6 +52,9 @@
                 <action android:name="com.haui.japanese.PAGER_CLICK" />
             </intent-filter>
         </receiver>
+
+        <service android:name="com.haui.japanese.controller.DownloadService" >
+        </service>
     </application>
 
 </manifest>
