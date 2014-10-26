@@ -19,7 +19,7 @@ import com.haui.japanese.model.ListQuiz;
 import com.haui.japanese.sqlite.DBCache;
 import com.haui.japanse.cache.QuizListCache;
 
-public class ListExamActivity extends ActionBarActivity {
+public class ListExamActivity extends Application {
 
 	GridView gridViewListExam;
 	int type;
@@ -32,13 +32,12 @@ public class ListExamActivity extends ActionBarActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
-		getSupportActionBar().setBackgroundDrawable(
-				getResources().getDrawable(R.color.blue));
-		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
 		setContentView(R.layout.activity_list_exam);
 		Bundle bd = getIntent().getExtras();
 		type = bd.getInt("type");
+
+		// so sánh type để set title cho phù hợp
 		switch (type) {
 		case 1:
 
@@ -70,6 +69,7 @@ public class ListExamActivity extends ActionBarActivity {
 			public void onItemClick(AdapterView<?> parent, View view,
 					int position, long id) {
 
+				// Nếu exam chưa được làm thì sẽ chuyển sang phần làm mới
 				if (adapter.getItem(position) == null) {
 					if (type == 3) {
 						Intent itListen = new Intent(ListExamActivity.this,
@@ -90,6 +90,7 @@ public class ListExamActivity extends ActionBarActivity {
 					}
 				} else {
 
+					// Nếu exam đã làm thì hiển thị kết quả đã làm trước đó
 					DoQuiz.exam = db.getExam(listQuiz.getListQuiz().get(
 							position)
 							+ "-" + type);
@@ -105,6 +106,9 @@ public class ListExamActivity extends ActionBarActivity {
 		});
 	}
 
+	/**
+	 * Load gridview
+	 */
 	void loadGrid() {
 		adapter = new ExamGridAdapter(listQuiz.getListQuiz(), type,
 				getApplicationContext());

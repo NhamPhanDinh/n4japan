@@ -2,6 +2,12 @@ package com.haui.japanese.model;
 
 import java.util.List;
 
+/**
+ * Class lưu 1 danh sách các đề thi
+ * 
+ * @author EO
+ * 
+ */
 public class ListQuiz {
 
 	List<Integer> listQuiz;

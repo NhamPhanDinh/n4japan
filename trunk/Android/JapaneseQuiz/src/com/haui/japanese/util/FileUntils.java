@@ -11,10 +11,23 @@ import android.util.Log;
 
 public class FileUntils {
 
+	/**
+	 * Xóa 1 file khỏi thẻ nhớ
+	 * 
+	 * @param file
+	 * @return
+	 */
 	public static boolean deleteFile(File file) {
 		return file.delete();
 	}
 
+	/**
+	 * Giải nén 1 file có kèm pass
+	 * 
+	 * @param file
+	 * @param folder
+	 * @param password
+	 */
 	public static void ExtractFile(File file, File folder, String password) {
 
 		try {
@@ -29,6 +42,12 @@ public class FileUntils {
 
 	}
 
+	/**
+	 * ĐỌc file dạng text
+	 * 
+	 * @param file
+	 * @return
+	 */
 	public static String readFileText(File file) {
 		StringBuilder st = new StringBuilder();
 		try {

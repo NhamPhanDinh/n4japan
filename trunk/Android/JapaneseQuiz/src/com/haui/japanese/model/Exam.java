@@ -3,6 +3,12 @@ package com.haui.japanese.model;
 import java.io.Serializable;
 import java.util.List;
 
+/**
+ * Đối tượng dùng để lưu trữ thông tin của một bài thi
+ * 
+ * @author EO
+ * 
+ */
 public class Exam implements Serializable {
 	public String id = null;
 	public List<Question> listQuestion = null;

@@ -20,13 +20,15 @@
         <SeekBar
             android:id="@+id/seekbar"
             android:layout_width="0dp"
-            android:layout_height="fill_parent"
-            android:layout_gravity="center"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
             android:layout_weight="6"
+            android:maxHeight="2dp"
+            android:minHeight="2dp"
             android:paddingLeft="25dp"
             android:paddingRight="17dp"
             android:progressDrawable="@drawable/custom_seekbar"
-            android:thumb="@drawable/thumbd" />
+            android:thumb="@drawable/thumbler_small" />
 
         <TextView
             android:id="@+id/tvTimeCountDown"
