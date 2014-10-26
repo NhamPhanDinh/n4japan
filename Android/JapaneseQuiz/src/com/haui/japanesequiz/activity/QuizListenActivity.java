@@ -50,7 +50,7 @@ import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu.CanvasTransformer;
 import com.viewpagerindicator.TitlePageIndicator;
 
-public class QuizListenActivity extends ActionBarActivity {
+public class QuizListenActivity extends Application {
 
 	SlidingMenu sm;
 	ImageView btnPlay;
@@ -66,7 +66,6 @@ public class QuizListenActivity extends ActionBarActivity {
 	int time = 0;
 	int totalTime;
 	int lastSelect;
-	// Question questionSelect = null;
 	boolean nhan = false;
 	SeekBar seekbar;
 	MediaPlayer mediaPlayer;
@@ -90,9 +89,6 @@ public class QuizListenActivity extends ActionBarActivity {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_quiz_listen);
-		getSupportActionBar().setBackgroundDrawable(
-				getResources().getDrawable(R.color.blue));
-		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 		passExtractCache = new PassExtractCache(getApplicationContext());
 		db = new DBCache(getApplicationContext());
 		Bundle bd = getIntent().getExtras();
@@ -143,11 +139,7 @@ public class QuizListenActivity extends ActionBarActivity {
 						FileUntils.ExtractFile(fileDownload, new File(
 								Variable.FILE_DIRECTORY), passExtractCache
 								.getPass());
-						DoQuiz.exam = new Exam();
-						DoQuiz.exam.listQuestion = JsonParse.listQuestion(
-								fileJson, year, type);
-						DoQuiz.exam.scoreWrong = 0;
-						DoQuiz.exam.time = 0;
+						dataToView(fileJson);
 						if (DoQuiz.exam.getListQuestion() == null) {
 							DialogNotify dialogLoadFail = new DialogNotify(
 									QuizListenActivity.this,
@@ -219,14 +211,20 @@ public class QuizListenActivity extends ActionBarActivity {
 			}
 			FileUntils.ExtractFile(file, new File(Variable.FILE_DIRECTORY),
 					passExtractCache.getPass());
-			DoQuiz.exam.listQuestion = JsonParse.listQuestion(fileJson, year,
-					type);
-			DoQuiz.exam.scoreWrong = 0;
-			DoQuiz.exam.time = 0;
+			dataToView(fileJson);
+
 			loadAudio();
 
 		}
 
+	}
+
+	void dataToView(File file) {
+		DoQuiz.exam = new Exam();
+		DoQuiz.exam.listQuestion = JsonParse.listQuestion(file, year, type);
+		DoQuiz.exam.scoreWrong = 0;
+		DoQuiz.exam.time = 0;
+		DoQuiz.exam.sumaryAnswer = 0;
 	}
 
 	void loadAudio() {
@@ -291,7 +289,7 @@ public class QuizListenActivity extends ActionBarActivity {
 
 			@Override
 			public void onClick(View v) {
-				btnPlay.setBackgroundResource(R.drawable.btn_pause);
+				btnPlay.setBackgroundResource(R.drawable.pauseaudio);
 				btnPlay.setClickable(false);
 				btnPlay.setEnabled(false);
 				mediaPlayer.start();

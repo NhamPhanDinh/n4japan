@@ -75,7 +75,6 @@ public class FragmentQuiz extends Fragment {
 	}
 
 	void showAnswer() {
-
 		dapan1.setClickable(false);
 		dapan2.setClickable(false);
 		dapan3.setClickable(false);

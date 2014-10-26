@@ -45,14 +45,13 @@ import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu.CanvasTransformer;
 import com.viewpagerindicator.TitlePageIndicator;
 
-public class QuizActivity extends ActionBarActivity {
+public class QuizActivity extends Application {
 
 	SlidingMenu sm;
 	CanvasTransformer mTransformer;
 	ViewPager pager;
 	TitlePageIndicator indicator;
 	QuizViewPagerAdapter pagerAdapter;
-	// List<Question> listQuestion;
 	public static TextView tvScore;
 	TextView tvSumaryAnswer, tvTime;
 	Timer timer;
@@ -61,7 +60,6 @@ public class QuizActivity extends ActionBarActivity {
 	int lastSelect;
 	int year;
 	int type;
-	// Question questionSelect = null;
 	boolean nhan = false;
 	PassExtractCache passExtractCache;
 	DBCache db;
@@ -77,9 +75,6 @@ public class QuizActivity extends ActionBarActivity {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_quiz);
-		getSupportActionBar().setBackgroundDrawable(
-				getResources().getDrawable(R.color.blue));
-		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
 		passExtractCache = new PassExtractCache(getApplicationContext());
 		db = new DBCache(getApplicationContext());
@@ -88,7 +83,7 @@ public class QuizActivity extends ActionBarActivity {
 		positionInitPager = bd.getInt("positionInit", 0);
 		year = bd.getInt("year");
 		type = bd.getInt("type");
-		
+
 		switch (type) {
 		case 1:
 			getSupportActionBar().setTitle(
@@ -102,8 +97,8 @@ public class QuizActivity extends ActionBarActivity {
 			break;
 		case 3:
 			getSupportActionBar().setTitle(
-					Html.fromHtml("<b><font color='#ffffff'>Đề Listening " + year
-							+ "  </font></b>"));
+					Html.fromHtml("<b><font color='#ffffff'>Đề Listening "
+							+ year + "  </font></b>"));
 			break;
 		}
 		if (loadData) {
@@ -114,7 +109,12 @@ public class QuizActivity extends ActionBarActivity {
 		}
 
 	}
-
+/**
+ * lấy stiring theo id
+ * 
+ * @param id
+ * @return
+ */
 	String layString(int id) {
 		return getResources().getString(id);
 	}
@@ -153,7 +153,7 @@ public class QuizActivity extends ActionBarActivity {
 									.getPass());
 							loadDataToView(fileJson);
 						} catch (Exception e) {
-
+							timer.cancel();
 							DialogNotify dialogLoadFail = new DialogNotify(
 									QuizActivity.this,
 									layString(R.string.load_data_no_Connect_title),
@@ -231,6 +231,7 @@ public class QuizActivity extends ActionBarActivity {
 		DoQuiz.exam.listQuestion = JsonParse.listQuestion(fileJson, year, type);
 		DoQuiz.exam.scoreWrong = 0;
 		DoQuiz.exam.time = 0;
+		DoQuiz.exam.sumaryAnswer=0;
 		loadCustomView();
 		initView();
 		loadSlideMenu();

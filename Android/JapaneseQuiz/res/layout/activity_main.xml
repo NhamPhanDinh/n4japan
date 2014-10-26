@@ -8,11 +8,19 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.haui.japanesequiz.activity.MainActivity" >
 
+    <ImageView
+        android:id="@+id/img"
+        android:layout_width="fill_parent"
+        android:layout_height="100dp"
+        android:src="@drawable/tesst" />
+
     <GridView
         android:id="@+id/gridViewMain"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
+        android:layout_below="@+id/img"
         android:layout_centerInParent="true"
+        android:layout_marginTop="10dp"
         android:horizontalSpacing="5dp"
         android:numColumns="2"
         android:verticalSpacing="5dp" >

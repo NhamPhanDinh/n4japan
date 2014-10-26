@@ -2,6 +2,12 @@ package com.haui.japanese.model;
 
 import java.io.Serializable;
 
+/**
+ * Đối tượng câu hỏi
+ * 
+ * @author EO
+ * 
+ */
 public class Question implements Serializable {
 
 	int id;
@@ -17,8 +23,21 @@ public class Question implements Serializable {
 	String answer_4;
 	int true_answer;
 	String image;
+
+	/**
+	 * Đáp án người dùng nhập vào
+	 */
 	int answer_choose;
+
+	/**
+	 * Biến kiểm tra xem đáp án trả lời có đúng hay không
+	 */
 	boolean isAnswerTrue;
+
+	/**
+	 * Kiểm tra xem đáp án đã được so sánh vs câu trả lời của người dùng hay
+	 * chưa
+	 */
 	boolean isCompare;
 
 	public Question() {

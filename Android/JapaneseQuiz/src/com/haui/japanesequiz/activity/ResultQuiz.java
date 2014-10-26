@@ -23,7 +23,7 @@ import com.haui.japanese.model.DoQuiz;
 import com.haui.japanese.model.Question;
 import com.haui.japanese.util.CommonUtils;
 
-public class ResultQuiz extends ActionBarActivity implements OnClickListener {
+public class ResultQuiz extends Application implements OnClickListener {
 
 	TextView tvResultTime, tvResultTitle, tvResultScore;
 	Button btnTotal, btnCorrect, btnIncorrect, btnUnAnswer;
@@ -38,9 +38,6 @@ public class ResultQuiz extends ActionBarActivity implements OnClickListener {
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
-		getSupportActionBar().setBackgroundDrawable(
-				getResources().getDrawable(R.color.blue));
-		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 		setContentView(R.layout.activity_resutl_quiz);
 		Bundle bd = getIntent().getExtras();
 

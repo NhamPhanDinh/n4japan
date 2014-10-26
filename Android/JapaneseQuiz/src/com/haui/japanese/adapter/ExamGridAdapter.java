@@ -14,12 +14,38 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
+/**
+ * Adapter Cho danh sách đề thì các năm
+ * 
+ * @author EO
+ * 
+ */
+
 public class ExamGridAdapter extends BaseAdapter {
 
+	/**
+	 * Danh sách các năm
+	 */
 	List<Integer> listQuiz;
+
+	/**
+	 * Context
+	 */
 	Context mContext;
+
+	/**
+	 * Layoutinflater
+	 */
 	LayoutInflater inflater;
+
+	/**
+	 * Database cache bài làm
+	 */
 	DBCache db;
+
+	/**
+	 * Kiểu bài 1,2,3
+	 */
 	int type;
 
 	public ExamGridAdapter(List<Integer> listQuiz, int type, Context mContext) {
@@ -63,9 +89,12 @@ public class ExamGridAdapter extends BaseAdapter {
 		TextView tvWrongExam = (TextView) convertView
 				.findViewById(R.id.tvWrongExam);
 		tvYearExam.setText(year + "");
+		
 		String id = year + "-" + type;
+		//lấy Exam từ db cache theo id
 		Exam exam = db.getExam(id);
 
+		//kiểm tra xem exam có trong cache hay k
 		if (exam == null) {
 			tvRightExam.setVisibility(View.INVISIBLE);
 			tvWrongExam.setVisibility(View.INVISIBLE);
@@ -88,7 +117,6 @@ public class ExamGridAdapter extends BaseAdapter {
 			}
 
 			int incorrect = total - unAnswer - correct;
-
 			tvRightExam.setVisibility(View.VISIBLE);
 			tvWrongExam.setVisibility(View.VISIBLE);
 			tvRightExam.setText(correct + "");

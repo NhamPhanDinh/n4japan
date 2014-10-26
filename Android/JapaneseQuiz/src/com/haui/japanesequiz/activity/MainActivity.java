@@ -51,12 +51,15 @@ public class MainActivity extends ActionBarActivity {
 						+ getResources().getString(R.string.app_name)
 						+ "</font></b>"));
 		setContentView(R.layout.activity_main);
+
 		DBCache db = new DBCache(this);
 		versionCache = new VersionCache(getApplicationContext());
 		quizlistCache = new QuizListCache(getApplicationContext());
 		passExtraCache = new PassExtractCache(getApplicationContext());
 
+		// Kiểm tra nếu có mạng thì check version
 		if (CommonUtils.isOnline(getApplicationContext())) {
+			// Tiến hành download vesion
 			DownloadFile download = new DownloadFile(MainActivity.this,
 					Variable.LINK_VERSION, "Version.json",
 					layString(R.string.kietradulieu)) {
@@ -65,16 +68,24 @@ public class MainActivity extends ActionBarActivity {
 				public void onDownloadComplete() {
 					File file = getmFile();
 					newVersion = JsonParse.getVersion(file);
+
+					// version mới khác version cũ thì sẽ lưu lại và tải lại
+					// danh sách các năm
 					if (!versionCache.getVersion().equals(newVersion)) {
 						versionCache.saveVersion(newVersion);
 						dowloadListQuiz();
-						initView();
 					} else {
+						
+						//Nếu version giống nhau thì kiểm tra xem danh sách đề các năm đã có chưa
 						if (quizlistCache.getListQuiz() == null) {
+							
+						//nếu chưa có đề thì tiến hành download danh sách đề
 							dowloadListQuiz();
 						}
-						initView();
+						
 					}
+					
+					initView();
 				}
 
 			};
@@ -82,26 +93,33 @@ public class MainActivity extends ActionBarActivity {
 		} else {
 
 			if (quizlistCache.getListQuiz() == null) {
-				DialogNotify dialog = new DialogNotify(MainActivity.this,
-						layString(R.string.msg), layString(R.string.nodata),
-						layString(R.string.close), layString(R.string.cancel)) {
 
-					@Override
-					public void onOKClick() {
-						finish();
-
-					}
-
-					@Override
-					public void onCancelClick() {
-
-					}
-				};
-			} else {
-				initView();
+				showDialogNoData();
 			}
 
+			initView();
+
 		}
+
+	}
+
+	void showDialogNoData() {
+
+		DialogNotify dialog = new DialogNotify(MainActivity.this,
+				layString(R.string.msg), layString(R.string.nodata),
+				layString(R.string.close), layString(R.string.cancel)) {
+
+			@Override
+			public void onOKClick() {
+				finish();
+
+			}
+
+			@Override
+			public void onCancelClick() {
+
+			}
+		};
 
 	}
 
@@ -159,26 +177,34 @@ public class MainActivity extends ActionBarActivity {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view,
 					int position, long id) {
-				switch (position) {
-				case 0:
-					Intent it1 = new Intent(MainActivity.this,
-							ListExamActivity.class);
-					it1.putExtra("type", 1);
-					startActivity(it1);
-					break;
-				case 1:
-					Intent it2 = new Intent(MainActivity.this,
-							ListExamActivity.class);
-					it2.putExtra("type", 2);
-					startActivity(it2);
-					break;
-				case 2:
-					Intent it3 = new Intent(MainActivity.this,
-							ListExamActivity.class);
-					it3.putExtra("type", 3);
-					startActivity(it3);
-					break;
-				case 3:
+
+				if (quizlistCache.getListQuiz() == null && position != 3) {
+					showDialogNoData();
+				} else {
+					switch (position) {
+					case 0:
+						Intent it1 = new Intent(MainActivity.this,
+								ListExamActivity.class);
+						it1.putExtra("type", 1);
+						startActivity(it1);
+						break;
+					case 1:
+						Intent it2 = new Intent(MainActivity.this,
+								ListExamActivity.class);
+						it2.putExtra("type", 2);
+						startActivity(it2);
+						break;
+					case 2:
+						Intent it3 = new Intent(MainActivity.this,
+								ListExamActivity.class);
+						it3.putExtra("type", 3);
+						startActivity(it3);
+						break;
+
+					}
+
+				}
+				if (position == 3) {
 					AlertDialog.Builder dialog = new AlertDialog.Builder(
 							MainActivity.this);
 					dialog.setTitle(layString(R.string.info));
@@ -195,9 +221,7 @@ public class MainActivity extends ActionBarActivity {
 								}
 							});
 					dialog.show();
-					break;
 				}
-
 			}
 		});
 
@@ -210,40 +234,12 @@ public class MainActivity extends ActionBarActivity {
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.main, menu);
 		return true;
 	}
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		// Handle action bar item clicks here. The action bar will
-		// automatically handle clicks on the Home/Up button, so long
-		// as you specify a parent activity in AndroidManifest.xml.
-		int id = item.getItemId();
-		if (id == R.id.action_settings) {
-			return true;
-		}
 		return super.onOptionsItemSelected(item);
 	}
-
-	/*
-	 * btnQuiz = (Button) findViewById(R.id.btnQuiz);
-	 * btnQuiz.setOnClickListener(new OnClickListener() {
-	 * 
-	 * @Override public void onClick(View v) { Intent it = new
-	 * Intent(MainActivity.this, QuizActivity.class); it.putExtra("load", true);
-	 * it.putExtra("positionInit", 0); startActivity(it);
-	 * 
-	 * } });
-	 * 
-	 * btnQuizNoLoad = (Button) findViewById(R.id.btnQuizNoLoad);
-	 * btnQuizNoLoad.setOnClickListener(new OnClickListener() {
-	 * 
-	 * @Override public void onClick(View v) { Intent it = new
-	 * Intent(MainActivity.this, QuizListenActivity.class); it.putExtra("load",
-	 * true); it.putExtra("positionInit", 0); startActivity(it);
-	 * 
-	 * } });
-	 */
 
 }
