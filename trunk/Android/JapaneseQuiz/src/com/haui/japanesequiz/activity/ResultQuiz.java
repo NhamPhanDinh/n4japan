@@ -18,6 +18,8 @@ import android.widget.Button;
 import android.widget.GridView;
 import android.widget.TextView;
 
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
 import com.haui.japanese.adapter.ResultButtonAdapter;
 import com.haui.japanese.model.DoQuiz;
 import com.haui.japanese.model.Question;
@@ -39,6 +41,10 @@ public class ResultQuiz extends Application implements OnClickListener {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_resutl_quiz);
+
+		AdView mAdView = (AdView) findViewById(R.id.adView2);
+		AdRequest adRequest = new AdRequest.Builder().build();
+		mAdView.loadAd(adRequest);
 		Bundle bd = getIntent().getExtras();
 
 		year = bd.getInt("year");

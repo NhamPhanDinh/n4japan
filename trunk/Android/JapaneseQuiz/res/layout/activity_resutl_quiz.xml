@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:ads="http://schemas.android.com/apk/res-auto"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent" >
 
@@ -116,7 +117,7 @@
         android:id="@+id/gridViewButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/adView"
+        android:layout_above="@+id/adView2"
         android:layout_below="@+id/result_header_layout"
         android:layout_marginTop="5.0dip"
         android:horizontalSpacing="5.0dip"
@@ -125,7 +126,16 @@
         android:paddingLeft="5.0dip"
         android:paddingTop="5.0dip"
         android:scrollbarStyle="outsideInset"
+        android:scrollbars="none"
         android:smoothScrollbar="true"
         android:verticalSpacing="5.0dip" />
+
+    <com.google.android.gms.ads.AdView
+        android:id="@+id/adView2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        ads:adSize="BANNER"
+        ads:adUnitId="@string/admodId" />
 
 </RelativeLayout>

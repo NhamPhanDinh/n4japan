@@ -31,6 +31,8 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
 import com.haui.japanese.adapter.QuizViewListenAdapter;
 import com.haui.japanese.adapter.QuizViewPagerAdapter;
 import com.haui.japanese.broadcast.MenuClickBroadCast;
@@ -89,6 +91,11 @@ public class QuizListenActivity extends Application {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_quiz_listen);
+
+		AdView mAdView = (AdView) findViewById(R.id.adView4);
+		AdRequest adRequest = new AdRequest.Builder().build();
+		mAdView.loadAd(adRequest);
+
 		passExtractCache = new PassExtractCache(getApplicationContext());
 		db = new DBCache(getApplicationContext());
 		Bundle bd = getIntent().getExtras();

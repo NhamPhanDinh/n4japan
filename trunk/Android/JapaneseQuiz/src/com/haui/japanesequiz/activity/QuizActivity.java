@@ -27,6 +27,8 @@ import android.view.animation.Interpolator;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
 import com.haui.japanese.adapter.QuizViewPagerAdapter;
 import com.haui.japanese.broadcast.MenuClickBroadCast;
 import com.haui.japanese.broadcast.PagerSelectBroadCast;
@@ -75,7 +77,9 @@ public class QuizActivity extends Application {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_quiz);
-
+		AdView mAdView = (AdView) findViewById(R.id.adView3);
+		AdRequest adRequest = new AdRequest.Builder().build();
+		mAdView.loadAd(adRequest);
 		passExtractCache = new PassExtractCache(getApplicationContext());
 		db = new DBCache(getApplicationContext());
 		Bundle bd = getIntent().getExtras();

@@ -3,6 +3,9 @@ package com.haui.japanesequiz.activity;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
+
 public class Application extends ActionBarActivity {
 
 	@Override
@@ -12,6 +15,8 @@ public class Application extends ActionBarActivity {
 		getSupportActionBar().setBackgroundDrawable(
 				getResources().getDrawable(R.color.blue));
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+		
+		
 	}
 
 }

@@ -17,7 +17,7 @@ public class Variable {
 	public static final String CACHE_QUIZ_LIST = "quiz_list";
 	public static final String CACHE_PASS_EXTRACT = "pass_extract";
 	public static final String FILE_DIRECTORY = Environment
-			.getExternalStorageDirectory() + "/JNPT/";
+			.getExternalStorageDirectory() + "/JLPT/";
 	public static final String HOST_DATA = "http://jlpt-n4.esy.es/web/Data/";
 	public static final String LINK_VERSION = "http://jlpt-n4.esy.es/web/Version/Version.json";
 	public static final String LINK_PASS = "http://jlpt-n4.esy.es/web/passzip.txt";
