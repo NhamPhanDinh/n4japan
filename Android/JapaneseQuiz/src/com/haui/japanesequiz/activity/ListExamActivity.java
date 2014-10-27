@@ -1,18 +1,16 @@
 package com.haui.japanesequiz.activity;
 
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
 import android.text.Html;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.GridView;
-import android.widget.Toast;
 
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
 import com.haui.japanese.adapter.ExamGridAdapter;
 import com.haui.japanese.model.DoQuiz;
 import com.haui.japanese.model.ListQuiz;
@@ -32,8 +30,12 @@ public class ListExamActivity extends Application {
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
-
 		setContentView(R.layout.activity_list_exam);
+		
+		AdView mAdView = (AdView) findViewById(R.id.adView10);
+		AdRequest adRequest = new AdRequest.Builder().build();
+		mAdView.loadAd(adRequest);
+
 		Bundle bd = getIntent().getExtras();
 		type = bd.getInt("type");
 

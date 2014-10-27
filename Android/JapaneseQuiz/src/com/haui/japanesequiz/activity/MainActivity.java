@@ -20,6 +20,8 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.GridView;
 
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
 import com.haui.japanese.adapter.MainGridViewAdapter;
 import com.haui.japanese.controller.DownloadFile;
 import com.haui.japanese.controller.JsonParse;
@@ -52,6 +54,10 @@ public class MainActivity extends ActionBarActivity {
 						+ "</font></b>"));
 		setContentView(R.layout.activity_main);
 
+		AdView mAdView = (AdView) findViewById(R.id.adView);
+		AdRequest adRequest = new AdRequest.Builder().build();
+		mAdView.loadAd(adRequest);
+
 		DBCache db = new DBCache(this);
 		versionCache = new VersionCache(getApplicationContext());
 		quizlistCache = new QuizListCache(getApplicationContext());
@@ -75,16 +81,18 @@ public class MainActivity extends ActionBarActivity {
 						versionCache.saveVersion(newVersion);
 						dowloadListQuiz();
 					} else {
-						
-						//Nếu version giống nhau thì kiểm tra xem danh sách đề các năm đã có chưa
+
+						// Nếu version giống nhau thì kiểm tra xem danh sách đề
+						// các năm đã có chưa
 						if (quizlistCache.getListQuiz() == null) {
-							
-						//nếu chưa có đề thì tiến hành download danh sách đề
+
+							// nếu chưa có đề thì tiến hành download danh sách
+							// đề
 							dowloadListQuiz();
 						}
-						
+
 					}
-					
+
 					initView();
 				}
 

@@ -19,6 +19,8 @@ import android.widget.Toast;
 import android.widget.RadioGroup.OnCheckedChangeListener;
 import android.widget.TextView;
 
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
 import com.haui.japanese.broadcast.ChooseAnswerBroadCast;
 import com.haui.japanese.model.Question;
 import com.haui.japanese.model.DoQuiz;
@@ -135,7 +137,7 @@ public class FragmentQuiz extends Fragment {
 	}
 
 	void initView(View v) {
-
+	
 		IntentFilter filter = new IntentFilter("com.haui.japanese.ANSWER_CLICK");
 		getActivity().registerReceiver(broadCast, filter);
 
@@ -186,7 +188,6 @@ public class FragmentQuiz extends Fragment {
 			tvQuestion.setText(question.getQuestion());
 		}
 
-		
 		if (question.getImage().equals("null")) {
 			imgQuestion.setVisibility(View.GONE);
 			progressImage.setVisibility(View.GONE);
@@ -206,7 +207,6 @@ public class FragmentQuiz extends Fragment {
 						public void onLoadingFailed(String imageUri, View view,
 								FailReason failReason) {
 							progressImage.setVisibility(View.GONE);
-							
 
 						}
 

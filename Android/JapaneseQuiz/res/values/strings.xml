@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">JNPT N4</string>
+    <string name="admodId">ca-app-pub-1716356963879976/5378972443</string>
+    <string name="app_name">JLPT N4</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
     <string name="kietradulieu">Đang kiểm tra dữ liệu...</string>
@@ -29,7 +30,7 @@
     <string name="closeact">Đóng</string>
     <string name="image_no_connect">Bạn cần kết nối mạng để có thể xem ảnh</string>
     <string name="info">Thông tin phần mềm</string>
-    <string name="infoContent">Phần mềm JNPT N4 \nVersion </string>
+    <string name="infoContent">Phần mềm JLPT N4 \nVersion </string>
 
     <string-array name="menuResult">
         <item>Trở về</item>
