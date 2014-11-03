@@ -53,17 +53,17 @@ public class ResultQuiz extends Application implements OnClickListener {
 		switch (type) {
 		case 1:
 			getSupportActionBar().setTitle(
-					Html.fromHtml("<b><font color='#ffffff'>KQ Vocabulary "
+					Html.fromHtml("<b><font color='#ffffff'>Result Vocabulary "
 							+ year + "  </font></b>"));
 			break;
 		case 2:
 			getSupportActionBar().setTitle(
-					Html.fromHtml("<b><font color='#ffffff'>KQ Grammar " + year
-							+ "  </font></b>"));
+					Html.fromHtml("<b><font color='#ffffff'>Result Grammar "
+							+ year + "  </font></b>"));
 			break;
 		case 3:
 			getSupportActionBar().setTitle(
-					Html.fromHtml("<b><font color='#ffffff'>KQ Listening "
+					Html.fromHtml("<b><font color='#ffffff'>Result Listening "
 							+ year + "  </font></b>"));
 			break;
 		}
@@ -119,9 +119,11 @@ public class ResultQuiz extends Application implements OnClickListener {
 		if (pass) {
 			tvResultTitle.setBackgroundResource(R.drawable.pass);
 			tvResultScore.setTextColor(Color.GREEN);
+			tvResultTitle.setText(getResources().getString(R.string.pass));
 		} else {
 			tvResultTitle.setBackgroundResource(R.drawable.fail);
 			tvResultScore.setTextColor(Color.RED);
+			tvResultTitle.setText(getResources().getString(R.string.fail));
 		}
 
 		loadGridview(listQuestion);

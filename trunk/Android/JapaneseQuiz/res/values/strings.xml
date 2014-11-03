@@ -2,40 +2,47 @@
 <resources>
 
     <string name="admodId">ca-app-pub-1716356963879976/5378972443</string>
+    <string name="admodeInApp">ca-app-pub-9955630880750766/4060239731</string>
     <string name="app_name">JLPT N4</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
-    <string name="kietradulieu">Đang kiểm tra dữ liệu...</string>
-    <string name="taicauhoi">Đang tải câu hỏi...</string>
-    <string name="taiaudio">Đang tải âm thanh...</string>
-    <string name="taidanhsach">Đang tải danh sách câu hỏi...</string>
-    <string name="titleketthuc">Kết thúc bài thi</string>
-    <string name="msgkethuc">Bài thi sẽ được kết thúc và chấm điểm</string>
-    <string name="msg">Thông báo</string>
-    <string name="nodata">Cần có kết nối mạng để tải dữ liệu lần đầu. Hãy bật kết nối mạng</string>
-    <string name="timeout">Hết thời gian, hiển thị kết quả thi</string>
-    <string name="ok">Đồng ý</string>
-    <string name="cancel">Bỏ qua</string>
-    <string name="close">Đóng ứng dụng</string>
-    <string name="cau">Câu</string>
+    <string name="kietradulieu">Checking data...</string>
+    <string name="taicauhoi">Loading question...</string>
+    <string name="taiaudio">Loading Audio...</string>
+    <string name="taidanhsach">Loading question list...</string>
+    <string name="titleketthuc">End Exam</string>
+    <string name="msgkethuc"> Do you want to end the exam and see your result</string>
+    <string name="msg">Waring</string>
+    <string name="nodata">Need a network connection to download the data first. Please enable network connection</string>
+    <string name="timeout">Timeout, display test results</string>
+    <string name="ok">OK</string>
+    <string name="cancel">Cancel</string>
+    <string name="close">Close App</string>
+    <string name="cau">問</string>
     <string name="voc">Vocabulary</string>
     <string name="gra">Grammar</string>
     <string name="Lis">Listening</string>
     <string name="about">About</string>
-    <string name="dethinam">Đề thi năm</string>
+    <string name="dethinam">JLPT Exam in</string>
     <string name="loadImageFail">Tải ảnh lỗi, đảm bảo rằng đã nối với Internet</string>
-    <string name="load_data_no_Connect_title">Lỗi tải dữ liệu</string>
-    <string name="load_data_no_Connect_mgs">Cần kết nối mạng để tải dữ liệu cho lần đầu sử dụng</string>
-    <string name="load_data_error">Tải dữ liệu lỗi hoặc bộ đề chưa được hỗ trợ</string>
-    <string name="closeact">Đóng</string>
-    <string name="image_no_connect">Bạn cần kết nối mạng để có thể xem ảnh</string>
-    <string name="info">Thông tin phần mềm</string>
-    <string name="infoContent">Phần mềm JLPT N4 \nVersion </string>
+    <string name="load_data_no_Connect_title">Error loading data</string>
+    <string name="load_data_no_Connect_mgs">Need a network connection to download the data for the first time use</string>
+    <string name="load_data_error">Download data error or the Exam is not yet supported</string>
+    <string name="closeact">Close</string>
+    <string name="image_no_connect">You need a network connection to view photos !</string>
+    <string name="info">Application Info</string>
+    <string name="infoContent"> JLPT N4 Version : </string>
+    <string name="result">Result</string>
+    <string name="pass">PASS</string>
+    <string name="fail">FAIL</string>
+    <string name="previous">Previous</string>
+    <string name="next">Next</string>
+    <string name="email">abc@gmail.com</string>
 
     <string-array name="menuResult">
-        <item>Trở về</item>
-        <item>Xem đáp án</item>
-        <item>Làm lại bài</item>
+        <item>JLPT Exam list</item>
+        <item>Your Result</item>
+        <item>Re-test</item>
     </string-array>
 
 </resources>

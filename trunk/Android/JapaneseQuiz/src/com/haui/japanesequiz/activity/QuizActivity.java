@@ -1,9 +1,6 @@
 package com.haui.japanesequiz.activity;
 
 import java.io.File;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -12,44 +9,47 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Canvas;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.support.v7.app.ActionBar.LayoutParams;
-import android.support.v7.app.ActionBarActivity;
 import android.text.Html;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.animation.Interpolator;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.InterstitialAd;
 import com.haui.japanese.adapter.QuizViewPagerAdapter;
 import com.haui.japanese.broadcast.MenuClickBroadCast;
 import com.haui.japanese.broadcast.PagerSelectBroadCast;
 import com.haui.japanese.controller.DownloadFile;
 import com.haui.japanese.controller.JsonParse;
+import com.haui.japanese.model.DoQuiz;
 import com.haui.japanese.model.Exam;
 import com.haui.japanese.model.Question;
-import com.haui.japanese.model.DoQuiz;
 import com.haui.japanese.sqlite.DBCache;
 import com.haui.japanese.util.CommonUtils;
 import com.haui.japanese.util.FileUntils;
 import com.haui.japanese.util.Variable;
 import com.haui.japanese.view.DialogNotify;
+import com.haui.japanse.cache.CountClickCache;
 import com.haui.japanse.cache.PassExtractCache;
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu.CanvasTransformer;
 import com.viewpagerindicator.TitlePageIndicator;
 
-public class QuizActivity extends Application {
+public class QuizActivity extends Application implements OnClickListener {
 
 	SlidingMenu sm;
+	Button btnPrevious, btnNext;
 	CanvasTransformer mTransformer;
 	ViewPager pager;
 	TitlePageIndicator indicator;
@@ -58,14 +58,15 @@ public class QuizActivity extends Application {
 	TextView tvSumaryAnswer, tvTime;
 	Timer timer;
 	Handler handler;
-	long time = 1800000;
+	long time;
 	int lastSelect;
 	int year;
 	int type;
 	boolean nhan = false;
 	PassExtractCache passExtractCache;
 	DBCache db;
-
+	private InterstitialAd interstitial;
+	CountClickCache countClickCache;
 	/**
 	 * Biến cờ cho biết có load lại dữ liệu lên hay không
 	 */
@@ -80,8 +81,21 @@ public class QuizActivity extends Application {
 		AdView mAdView = (AdView) findViewById(R.id.adView3);
 		AdRequest adRequest = new AdRequest.Builder().build();
 		mAdView.loadAd(adRequest);
+
+		// Create the interstitial.
+		interstitial = new InterstitialAd(this);
+		interstitial
+				.setAdUnitId(getResources().getString(R.string.admodeInApp));
+
+		// Create ad request.
+
+		// Begin loading your interstitial.
+		interstitial.loadAd(adRequest);
+
 		passExtractCache = new PassExtractCache(getApplicationContext());
 		db = new DBCache(getApplicationContext());
+		countClickCache = new CountClickCache(getApplicationContext());
+
 		Bundle bd = getIntent().getExtras();
 		loadData = bd.getBoolean("load");
 		positionInitPager = bd.getInt("positionInit", 0);
@@ -91,18 +105,18 @@ public class QuizActivity extends Application {
 		switch (type) {
 		case 1:
 			getSupportActionBar().setTitle(
-					Html.fromHtml("<b><font color='#ffffff'>Đề Vocabulary "
+					Html.fromHtml("<b><font color='#ffffff'> Vocabulary "
 							+ year + "  </font></b>"));
 			break;
 		case 2:
 			getSupportActionBar().setTitle(
-					Html.fromHtml("<b><font color='#ffffff'>Đề Grammar " + year
+					Html.fromHtml("<b><font color='#ffffff'> Grammar " + year
 							+ "  </font></b>"));
 			break;
 		case 3:
 			getSupportActionBar().setTitle(
-					Html.fromHtml("<b><font color='#ffffff'>Đề Listening "
-							+ year + "  </font></b>"));
+					Html.fromHtml("<b><font color='#ffffff'> Listening " + year
+							+ "  </font></b>"));
 			break;
 		}
 		if (loadData) {
@@ -113,14 +127,21 @@ public class QuizActivity extends Application {
 		}
 
 	}
-/**
- * lấy stiring theo id
- * 
- * @param id
- * @return
- */
+
+	/**
+	 * lấy stiring theo id
+	 * 
+	 * @param id
+	 * @return
+	 */
 	String layString(int id) {
 		return getResources().getString(id);
+	}
+
+	public void displayInterstitial() {
+		if (interstitial.isLoaded()) {
+			interstitial.show();
+		}
 	}
 
 	/**
@@ -132,9 +153,11 @@ public class QuizActivity extends Application {
 		if (type == 1) {
 			title = "Voc";
 			link = Variable.HOST_DATA + year + "/Vocabulary/";
+			time = 1500000;
 		} else if (type == 2) {
 			title = "Gra";
 			link = Variable.HOST_DATA + year + "/Grammar/";
+			time = 3000000;
 		}
 
 		File file = new File(Variable.FILE_DIRECTORY + title + year + ".zip");
@@ -234,8 +257,9 @@ public class QuizActivity extends Application {
 		DoQuiz.exam = new Exam();
 		DoQuiz.exam.listQuestion = JsonParse.listQuestion(fileJson, year, type);
 		DoQuiz.exam.scoreWrong = 0;
+		DoQuiz.exam.scoreRight = 0;
 		DoQuiz.exam.time = 0;
-		DoQuiz.exam.sumaryAnswer=0;
+		DoQuiz.exam.sumaryAnswer = 0;
 		loadCustomView();
 		initView();
 		loadSlideMenu();
@@ -245,6 +269,19 @@ public class QuizActivity extends Application {
 	 * Khởi tạo các view
 	 */
 	void initView() {
+		btnNext = (Button) findViewById(R.id.btnNext);
+		btnPrevious = (Button) findViewById(R.id.btnPrevious);
+		btnNext.setOnClickListener(this);
+		btnPrevious.setOnClickListener(this);
+
+		if (positionInitPager == 0) {
+			btnPrevious.setVisibility(View.INVISIBLE);
+		}
+
+		if (positionInitPager == DoQuiz.exam.listQuestion.size() - 1) {
+			btnNext.setVisibility(View.INVISIBLE);
+		}
+
 		pager = (ViewPager) findViewById(R.id.pager);
 		indicator = (TitlePageIndicator) findViewById(R.id.indicator);
 
@@ -259,13 +296,26 @@ public class QuizActivity extends Application {
 		tvSumaryAnswer.setText(DoQuiz.exam.sumaryAnswer + "/"
 				+ DoQuiz.exam.listQuestion.size());
 		pagerAdapter = new QuizViewPagerAdapter(getSupportFragmentManager(),
-				DoQuiz.exam.listQuestion, loadData);
+				DoQuiz.exam.listQuestion, loadData, QuizActivity.this);
 		pager.setAdapter(pagerAdapter);
 		pager.setCurrentItem(positionInitPager);
 		indicator.setOnPageChangeListener(new OnPageChangeListener() {
 
 			@Override
 			public void onPageSelected(int pos) {
+
+				if (pos == 0) {
+					btnPrevious.setVisibility(View.INVISIBLE);
+				} else {
+					btnPrevious.setVisibility(View.VISIBLE);
+				}
+
+				if (pos == DoQuiz.exam.listQuestion.size() - 1) {
+					btnNext.setVisibility(View.INVISIBLE);
+				} else {
+					btnNext.setVisibility(View.VISIBLE);
+				}
+
 				// TODO Auto-generated method stub
 				if (pos == (DoQuiz.exam.listQuestion.size() - 1)) {
 					if (DoQuiz.exam.sumaryAnswer == DoQuiz.exam.listQuestion
@@ -454,6 +504,13 @@ public class QuizActivity extends Application {
 		if (item.getItemId() == android.R.id.home) {
 			sm.toggle();
 		} else if (item.getItemId() == R.id.menuCheck) {
+
+			int count = countClickCache.getCount();
+			if (count < 5) {
+				displayInterstitial();
+			}
+			countClickCache.saveIncreateCount();
+
 			if (loadData) {
 				finishQuiz();
 			} else {
@@ -531,4 +588,19 @@ public class QuizActivity extends Application {
 			return t * t * t + 1.0f;
 		}
 	};
+
+	@Override
+	public void onClick(View v) {
+		switch (v.getId()) {
+		case R.id.btnNext:
+			int currentPosition = pager.getCurrentItem();
+			pager.setCurrentItem(++currentPosition);
+			break;
+		case R.id.btnPrevious:
+			int currentPosition1 = pager.getCurrentItem();
+			pager.setCurrentItem(--currentPosition1);
+			break;
+		}
+
+	}
 }

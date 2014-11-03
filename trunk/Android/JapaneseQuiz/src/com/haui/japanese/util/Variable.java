@@ -14,6 +14,7 @@ public class Variable {
 			R.drawable.bg_gra, R.drawable.bg_lis, R.drawable.bg_about };
 	public static final String CACHE_FILE_NAME = "cache_data";
 	public static final String CACHE_VERSION = "version";
+	public static final String CACHE_COUNT_CLICK = "count_click";
 	public static final String CACHE_QUIZ_LIST = "quiz_list";
 	public static final String CACHE_PASS_EXTRACT = "pass_extract";
 	public static final String FILE_DIRECTORY = Environment

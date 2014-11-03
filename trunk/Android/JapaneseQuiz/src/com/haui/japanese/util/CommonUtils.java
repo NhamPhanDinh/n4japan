@@ -4,11 +4,16 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import android.content.Context;
+import android.graphics.Typeface;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.widget.Toast;
 
 public class CommonUtils {
+
+	public static Typeface getNormalFont(Context mContext) {
+		return Typeface.createFromAsset(mContext.getAssets(), "jp.ttc");
+	}
 
 	/**
 	 * Hiển thị thời gian theo time long

@@ -11,6 +11,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Canvas;
+import android.graphics.Typeface;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
@@ -33,6 +34,7 @@ import android.widget.Toast;
 
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.InterstitialAd;
 import com.haui.japanese.adapter.QuizViewListenAdapter;
 import com.haui.japanese.adapter.QuizViewPagerAdapter;
 import com.haui.japanese.broadcast.MenuClickBroadCast;
@@ -47,6 +49,7 @@ import com.haui.japanese.util.CommonUtils;
 import com.haui.japanese.util.FileUntils;
 import com.haui.japanese.util.Variable;
 import com.haui.japanese.view.DialogNotify;
+import com.haui.japanse.cache.CountClickCache;
 import com.haui.japanse.cache.PassExtractCache;
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu.CanvasTransformer;
@@ -86,6 +89,11 @@ public class QuizListenActivity extends Application {
 	boolean loadData = false;
 	int positionInitPager;
 
+	private InterstitialAd interstitial;
+	CountClickCache countClickCache;
+	
+	
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
@@ -96,8 +104,20 @@ public class QuizListenActivity extends Application {
 		AdRequest adRequest = new AdRequest.Builder().build();
 		mAdView.loadAd(adRequest);
 
+		// Create the interstitial.
+		interstitial = new InterstitialAd(this);
+		interstitial
+				.setAdUnitId(getResources().getString(R.string.admodeInApp));
+
+		// Create ad request.
+
+		// Begin loading your interstitial.
+		interstitial.loadAd(adRequest);
+
 		passExtractCache = new PassExtractCache(getApplicationContext());
 		db = new DBCache(getApplicationContext());
+		countClickCache = new CountClickCache(getApplicationContext());
+
 		Bundle bd = getIntent().getExtras();
 		loadData = bd.getBoolean("load");
 		positionInitPager = bd.getInt("positionInit", 0);
@@ -118,6 +138,12 @@ public class QuizListenActivity extends Application {
 
 	String layString(int id) {
 		return getResources().getString(id);
+	}
+
+	public void displayInterstitial() {
+		if (interstitial.isLoaded()) {
+			interstitial.show();
+		}
 	}
 
 	/**
@@ -230,6 +256,7 @@ public class QuizListenActivity extends Application {
 		DoQuiz.exam = new Exam();
 		DoQuiz.exam.listQuestion = JsonParse.listQuestion(file, year, type);
 		DoQuiz.exam.scoreWrong = 0;
+		DoQuiz.exam.scoreRight = 0;
 		DoQuiz.exam.time = 0;
 		DoQuiz.exam.sumaryAnswer = 0;
 	}
@@ -340,7 +367,7 @@ public class QuizListenActivity extends Application {
 		tvSumaryAnswer.setText(DoQuiz.exam.sumaryAnswer + "/"
 				+ DoQuiz.exam.listQuestion.size());
 		pagerAdapter = new QuizViewListenAdapter(getSupportFragmentManager(),
-				DoQuiz.exam.listQuestion, loadData);
+				DoQuiz.exam.listQuestion, loadData, QuizListenActivity.this);
 		pager.setAdapter(pagerAdapter);
 		pager.setCurrentItem(positionInitPager);
 		indicator.setOnPageChangeListener(new OnPageChangeListener() {
@@ -536,6 +563,13 @@ public class QuizListenActivity extends Application {
 		if (item.getItemId() == android.R.id.home) {
 			sm.toggle();
 		} else if (item.getItemId() == R.id.menuCheck) {
+
+			int count = countClickCache.getCount();
+			if (count < 5) {
+				displayInterstitial();
+			}
+			countClickCache.saveIncreateCount();
+
 			if (loadData) {
 				finishQuiz();
 			} else {

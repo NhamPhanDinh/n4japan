@@ -5,6 +5,9 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 
+import com.google.android.gms.internal.fi;
+import com.google.android.gms.internal.fo;
+
 import net.lingala.zip4j.core.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
 import android.util.Log;
@@ -38,6 +41,18 @@ public class FileUntils {
 			zipFile.extractAll(folder.getPath());
 		} catch (ZipException e) {
 			e.printStackTrace();
+		}
+
+	}
+
+	public static void deleteFolder(File folder) {
+
+		if (folder.isDirectory()) {
+			File[] files = folder.listFiles();
+			for (File f : files) {
+				f.delete();
+			}
+
 		}
 
 	}

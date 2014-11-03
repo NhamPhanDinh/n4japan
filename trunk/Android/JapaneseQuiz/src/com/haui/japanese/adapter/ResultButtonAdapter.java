@@ -24,13 +24,15 @@ public class ResultButtonAdapter extends BaseAdapter {
 	int year;
 	int type;
 
-	public ResultButtonAdapter(List<Question> list, ActionBarActivity mContext,int year,int type) {
+	public ResultButtonAdapter(List<Question> list, ActionBarActivity mContext,
+			int year, int type) {
 		super();
 		this.list = list;
 		this.mContext = mContext;
-		this.year=year;
-		this.type=type;
-		inflater=(LayoutInflater) mContext.getSystemService(mContext.LAYOUT_INFLATER_SERVICE);
+		this.year = year;
+		this.type = type;
+		inflater = (LayoutInflater) mContext
+				.getSystemService(mContext.LAYOUT_INFLATER_SERVICE);
 	}
 
 	@Override
@@ -57,32 +59,49 @@ public class ResultButtonAdapter extends BaseAdapter {
 		if (convertView == null) {
 			convertView = inflater.inflate(R.layout.button_result, null);
 		}
-		
-		Button btnResult=(Button) convertView.findViewById(R.id.btnResult);
-		btnResult.setText("Câu "+(list.get(position).getId()+1));
-	//	btnResult.setCompoundDrawablesWithIntrinsicBounds(null, null, null, mContext.getResources().getDrawable(R.drawable.exclamation_mark));
-		if(qt.getAnswer_choose()==-1){
-			btnResult.setCompoundDrawablesWithIntrinsicBounds(null, null, null, mContext.getResources().getDrawable(R.drawable.exclamation_mark) );
-		}else{
-			if(qt.isAnswerTrue()){
-				btnResult.setCompoundDrawablesWithIntrinsicBounds(null, null, null, mContext.getResources().getDrawable(R.drawable.right_mark) );
-			}else{
-				btnResult.setCompoundDrawablesWithIntrinsicBounds(null, null, null, mContext.getResources().getDrawable(R.drawable.wrong_mark) );
+
+		Button btnResult = (Button) convertView.findViewById(R.id.btnResult);
+		btnResult.setText(mContext.getResources().getString(R.string.cau)+" "
+				+ (list.get(position).getId() + 1));
+		// btnResult.setCompoundDrawablesWithIntrinsicBounds(null, null, null,
+		// mContext.getResources().getDrawable(R.drawable.exclamation_mark));
+		if (qt.getAnswer_choose() == -1) {
+			btnResult.setCompoundDrawablesWithIntrinsicBounds(
+					null,
+					null,
+					null,
+					mContext.getResources().getDrawable(
+							R.drawable.exclamation_mark));
+		} else {
+			if (qt.isAnswerTrue()) {
+				btnResult.setCompoundDrawablesWithIntrinsicBounds(
+						null,
+						null,
+						null,
+						mContext.getResources().getDrawable(
+								R.drawable.right_mark));
+			} else {
+				btnResult.setCompoundDrawablesWithIntrinsicBounds(
+						null,
+						null,
+						null,
+						mContext.getResources().getDrawable(
+								R.drawable.wrong_mark));
 			}
 		}
-		
+
 		btnResult.setOnClickListener(new OnClickListener() {
-			
+
 			@Override
 			public void onClick(View v) {
-				
+
 				Intent it = new Intent(mContext, QuizActivity.class);
 				it.putExtra("load", false);
 				it.putExtra("positionInit", qt.getId());
 				it.putExtra("year", year);
 				it.putExtra("type", type);
 				mContext.startActivity(it);
-				
+
 			}
 		});
 
