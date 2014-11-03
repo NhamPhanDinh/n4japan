@@ -14,7 +14,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="5.0dip"
         android:gravity="center"
-        android:text="Đề thi năm"
+        android:text="@string/dethinam"
         android:textColor="@color/black" />
 
     <TextView

@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -48,6 +49,7 @@ public class FragmentQuiz extends Fragment {
 	boolean isCheckAnswer = false;
 	boolean loadData;
 	ProgressBar progressImage;
+	Typeface font;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater,
@@ -137,7 +139,9 @@ public class FragmentQuiz extends Fragment {
 	}
 
 	void initView(View v) {
-	
+		
+		font=CommonUtils.getNormalFont(getActivity());
+
 		IntentFilter filter = new IntentFilter("com.haui.japanese.ANSWER_CLICK");
 		getActivity().registerReceiver(broadCast, filter);
 
@@ -145,15 +149,26 @@ public class FragmentQuiz extends Fragment {
 		progressImage.setVisibility(View.VISIBLE);
 
 		tvQuestion = (TextView) v.findViewById(R.id.tvQuestion);
+		tvQuestion.setTypeface(font);
+
 		imgQuestion = (ResizableImageView) v.findViewById(R.id.imgQuestion);
+
 		tvPharagrahp = (TextView) v.findViewById(R.id.tvPharagrahp);
+		tvPharagrahp.setTypeface(font);
+
 		tvGroup = (TextView) v.findViewById(R.id.tvGroup);
+		tvGroup.setTypeface(font,
+				Typeface.BOLD);
 
 		dapan = (RadioGroup) v.findViewById(R.id.dapan);
 		dapan1 = (RadioButton) v.findViewById(R.id.dapan1);
+		dapan1.setTypeface(font);
 		dapan2 = (RadioButton) v.findViewById(R.id.dapan2);
+		dapan2.setTypeface(font);
 		dapan3 = (RadioButton) v.findViewById(R.id.dapan3);
+		dapan3.setTypeface(font);
 		dapan4 = (RadioButton) v.findViewById(R.id.dapan4);
+		dapan4.setTypeface(font);
 
 		loader = com.nostra13.universalimageloader.core.ImageLoader
 				.getInstance();
@@ -295,7 +310,10 @@ public class FragmentQuiz extends Fragment {
 
 						if (!question.isAnswerTrue()) {
 							DoQuiz.exam.scoreWrong++;
-							QuizActivity.tvScore.setText(DoQuiz.exam.scoreWrong
+
+						} else {
+							DoQuiz.exam.scoreRight++;
+							QuizActivity.tvScore.setText(DoQuiz.exam.scoreRight
 									+ "");
 						}
 

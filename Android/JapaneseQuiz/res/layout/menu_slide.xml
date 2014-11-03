@@ -25,7 +25,7 @@
         android:layout_alignParentBottom="true"
         android:background="@drawable/btn_finish"
         android:drawableLeft="@drawable/ic_menu_finish"
-        android:text="Kết thúc"
+        android:text="@string/titleketthuc"
         android:textColor="@color/white" />
 
 </RelativeLayout>

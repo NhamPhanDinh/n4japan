@@ -13,6 +13,7 @@ public class Exam implements Serializable {
 	public String id = null;
 	public List<Question> listQuestion = null;
 	public int scoreWrong = 0;
+	public int scoreRight = 0;
 	public long time = 0;
 	public int sumaryAnswer = 0;
 
@@ -54,6 +55,14 @@ public class Exam implements Serializable {
 
 	public void setSumaryAnswer(int sumaryAnswer) {
 		this.sumaryAnswer = sumaryAnswer;
+	}
+
+	public int getScoreRight() {
+		return scoreRight;
+	}
+
+	public void setScoreRight(int scoreRight) {
+		this.scoreRight = scoreRight;
 	}
 
 	@Override

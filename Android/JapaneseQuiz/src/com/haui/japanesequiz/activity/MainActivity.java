@@ -9,6 +9,8 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
@@ -28,6 +30,7 @@ import com.haui.japanese.controller.JsonParse;
 import com.haui.japanese.model.ListQuiz;
 import com.haui.japanese.sqlite.DBCache;
 import com.haui.japanese.util.CommonUtils;
+import com.haui.japanese.util.FileUntils;
 import com.haui.japanese.util.Variable;
 import com.haui.japanese.view.DialogNotify;
 import com.haui.japanse.cache.PassExtractCache;
@@ -79,6 +82,9 @@ public class MainActivity extends ActionBarActivity {
 					// danh sách các năm
 					if (!versionCache.getVersion().equals(newVersion)) {
 						versionCache.saveVersion(newVersion);
+						// xóa các file dữ liệu trong thư mục JLPT
+						FileUntils.deleteFolder(new File(
+								Variable.FILE_DIRECTORY));
 						dowloadListQuiz();
 					} else {
 
@@ -213,11 +219,34 @@ public class MainActivity extends ActionBarActivity {
 
 				}
 				if (position == 3) {
+					
+					Intent itAbout=new Intent(MainActivity.this, AboutActivity.class);
+					startActivity(itAbout);
+					/*
+					PackageInfo pInfo;
+					String version = "1.0";
+					try {
+						pInfo = getPackageManager().getPackageInfo(
+								getPackageName(), 0);
+						version = pInfo.versionName;
+					} catch (NameNotFoundException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+
 					AlertDialog.Builder dialog = new AlertDialog.Builder(
 							MainActivity.this);
 					dialog.setTitle(layString(R.string.info));
 					dialog.setMessage(layString(R.string.infoContent) + " "
-							+ versionCache.getVersion());
+							+ version);
+					dialog.setItems(new String[] {"Rate App","Share Facebook","Feedback"}, new OnClickListener() {
+
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+							// TODO Auto-generated method stub
+
+						}
+					});
 					dialog.setNegativeButton(layString(R.string.closeact),
 							new OnClickListener() {
 
@@ -229,7 +258,7 @@ public class MainActivity extends ActionBarActivity {
 								}
 							});
 					dialog.show();
-				}
+				*/}
 			}
 		});
 
