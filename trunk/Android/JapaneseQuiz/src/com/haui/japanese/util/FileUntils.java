@@ -74,10 +74,10 @@ public class FileUntils {
 				st.append('\n');
 			}
 			br.close();
+			return st.toString();
 		} catch (IOException e) {
-			Log.e("file", e.toString());
+			return null;
 		}
-		return st.toString();
 
 	}
 

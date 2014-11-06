@@ -80,22 +80,29 @@ public class MainActivity extends ActionBarActivity {
 
 					// version mới khác version cũ thì sẽ lưu lại và tải lại
 					// danh sách các năm
-					if (!versionCache.getVersion().equals(newVersion)) {
-						versionCache.saveVersion(newVersion);
-						// xóa các file dữ liệu trong thư mục JLPT
-						FileUntils.deleteFolder(new File(
-								Variable.FILE_DIRECTORY));
-						dowloadListQuiz();
-					} else {
-
-						// Nếu version giống nhau thì kiểm tra xem danh sách đề
-						// các năm đã có chưa
-						if (quizlistCache.getListQuiz() == null) {
-
-							// nếu chưa có đề thì tiến hành download danh sách
-							// đề
+					if (newVersion != null) {
+						if (!versionCache.getVersion().equals(newVersion)) {
+							versionCache.saveVersion(newVersion);
+							// xóa các file dữ liệu trong thư mục JLPT
+							FileUntils.deleteFolder(new File(
+									Variable.FILE_DIRECTORY));
 							dowloadListQuiz();
+						} else {
+
+							// Nếu version giống nhau thì kiểm tra xem danh sách
+							// đề
+							// các năm đã có chưa
+							if (quizlistCache.getListQuiz() == null) {
+
+								// nếu chưa có đề thì tiến hành download danh
+								// sách
+								// đề
+								dowloadListQuiz();
+							}
+
 						}
+				} else {
+						showDialogNoData();
 
 					}
 
@@ -219,46 +226,37 @@ public class MainActivity extends ActionBarActivity {
 
 				}
 				if (position == 3) {
-					
-					Intent itAbout=new Intent(MainActivity.this, AboutActivity.class);
+
+					Intent itAbout = new Intent(MainActivity.this,
+							AboutActivity.class);
 					startActivity(itAbout);
 					/*
-					PackageInfo pInfo;
-					String version = "1.0";
-					try {
-						pInfo = getPackageManager().getPackageInfo(
-								getPackageName(), 0);
-						version = pInfo.versionName;
-					} catch (NameNotFoundException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-
-					AlertDialog.Builder dialog = new AlertDialog.Builder(
-							MainActivity.this);
-					dialog.setTitle(layString(R.string.info));
-					dialog.setMessage(layString(R.string.infoContent) + " "
-							+ version);
-					dialog.setItems(new String[] {"Rate App","Share Facebook","Feedback"}, new OnClickListener() {
-
-						@Override
-						public void onClick(DialogInterface dialog, int which) {
-							// TODO Auto-generated method stub
-
-						}
-					});
-					dialog.setNegativeButton(layString(R.string.closeact),
-							new OnClickListener() {
-
-								@Override
-								public void onClick(DialogInterface dialog,
-										int which) {
-									// TODO Auto-generated method stub
-
-								}
-							});
-					dialog.show();
-				*/}
+					 * PackageInfo pInfo; String version = "1.0"; try { pInfo =
+					 * getPackageManager().getPackageInfo( getPackageName(), 0);
+					 * version = pInfo.versionName; } catch
+					 * (NameNotFoundException e) { // TODO Auto-generated catch
+					 * block e.printStackTrace(); }
+					 * 
+					 * AlertDialog.Builder dialog = new AlertDialog.Builder(
+					 * MainActivity.this);
+					 * dialog.setTitle(layString(R.string.info));
+					 * dialog.setMessage(layString(R.string.infoContent) + " " +
+					 * version); dialog.setItems(new String[]
+					 * {"Rate App","Share Facebook","Feedback"}, new
+					 * OnClickListener() {
+					 * 
+					 * @Override public void onClick(DialogInterface dialog, int
+					 * which) { // TODO Auto-generated method stub
+					 * 
+					 * } });
+					 * dialog.setNegativeButton(layString(R.string.closeact),
+					 * new OnClickListener() {
+					 * 
+					 * @Override public void onClick(DialogInterface dialog, int
+					 * which) { // TODO Auto-generated method stub
+					 * 
+					 * } }); dialog.show();
+					 */}
 			}
 		});
 

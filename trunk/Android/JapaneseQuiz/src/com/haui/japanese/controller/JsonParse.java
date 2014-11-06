@@ -22,8 +22,9 @@ import com.haui.japanese.util.Variable;
 public class JsonParse {
 
 	public static String getVersion(File file) {
-		String jsonString = FileUntils.readFileText(file);
+
 		try {
+			String jsonString = FileUntils.readFileText(file);
 			JSONObject obj = new JSONObject(jsonString);
 			String version = obj.getString("version");
 			FileUntils.deleteFile(file);
@@ -38,8 +39,14 @@ public class JsonParse {
 	}
 
 	public static String getPass(File file) {
-		String pass = FileUntils.readFileText(file);
-		FileUntils.deleteFile(file);
+		String pass = null;
+
+		try {
+			pass = FileUntils.readFileText(file);
+			FileUntils.deleteFile(file);
+		} catch (Exception e) {
+			pass = null;
+		}
 		return pass;
 	}
 
@@ -55,11 +62,13 @@ public class JsonParse {
 				listYear.add(year);
 			}
 			listQuiz.setListQuiz(listYear);
+			return listQuiz;
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			return null;
 		}
-		return listQuiz;
+
 	}
 
 	public static List<Question> listQuestion(File file, int year, int type) {
@@ -67,12 +76,12 @@ public class JsonParse {
 		String title = null;
 		if (type == 1) {
 			title = "Voc";
-			link = Variable.HOST_DATA +year+ "/Vocabulary/";
+			link = Variable.HOST_DATA + year + "/Vocabulary/";
 		} else if (type == 2) {
 			title = "Gra";
-			link = Variable.HOST_DATA + year+"/Grammar/";
-		}else if(type==3){
-			link = Variable.HOST_DATA + year+"/Listerning/";
+			link = Variable.HOST_DATA + year + "/Grammar/";
+		} else if (type == 3) {
+			link = Variable.HOST_DATA + year + "/Listerning/";
 		}
 
 		String jsonString = FileUntils.readFileText(file);
@@ -99,9 +108,9 @@ public class JsonParse {
 				}
 
 				qt.setTrue_answer(obj.getInt("true_answer"));
-				String linkImg=obj.getString("image");
-				if(!linkImg.equals("null")){
-					linkImg=link+linkImg+".png";
+				String linkImg = obj.getString("image");
+				if (!linkImg.equals("null")) {
+					linkImg = link + linkImg + ".png";
 				}
 				qt.setImage(linkImg);
 				listQuestion.add(qt);

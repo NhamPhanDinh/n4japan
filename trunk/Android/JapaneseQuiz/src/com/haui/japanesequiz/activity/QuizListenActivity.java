@@ -91,8 +91,6 @@ public class QuizListenActivity extends Application {
 
 	private InterstitialAd interstitial;
 	CountClickCache countClickCache;
-	
-	
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -174,25 +172,7 @@ public class QuizListenActivity extends Application {
 								.getPass());
 						dataToView(fileJson);
 						if (DoQuiz.exam.getListQuestion() == null) {
-							DialogNotify dialogLoadFail = new DialogNotify(
-									QuizListenActivity.this,
-									layString(R.string.load_data_no_Connect_title),
-									layString(R.string.load_data_error),
-									layString(R.string.closeact)) {
-
-								@Override
-								public void onOKClick() {
-									finish();
-
-								}
-
-								@Override
-								public void onCancelClick() {
-									finish();
-
-								}
-							};
-
+							showDialogNoConnect();
 							FileUntils.deleteFile(fileDownload);
 						} else {
 							loadAudio();
@@ -252,7 +232,28 @@ public class QuizListenActivity extends Application {
 
 	}
 
+	void showDialogNoConnect() {
+		DialogNotify dialogLoadFail = new DialogNotify(QuizListenActivity.this,
+				layString(R.string.load_data_no_Connect_title),
+				layString(R.string.load_data_error),
+				layString(R.string.closeact)) {
+
+			@Override
+			public void onOKClick() {
+				finish();
+
+			}
+
+			@Override
+			public void onCancelClick() {
+				finish();
+
+			}
+		};
+	}
+
 	void dataToView(File file) {
+
 		DoQuiz.exam = new Exam();
 		DoQuiz.exam.listQuestion = JsonParse.listQuestion(file, year, type);
 		DoQuiz.exam.scoreWrong = 0;
@@ -565,7 +566,7 @@ public class QuizListenActivity extends Application {
 		} else if (item.getItemId() == R.id.menuCheck) {
 
 			int count = countClickCache.getCount();
-			if (count < 5) {
+			if (count == 4) {
 				displayInterstitial();
 			}
 			countClickCache.saveIncreateCount();

@@ -1,6 +1,7 @@
 package com.haui.japanesequiz.activity;
 
 import java.io.File;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -180,7 +181,7 @@ public class QuizActivity extends Application implements OnClickListener {
 									.getPass());
 							loadDataToView(fileJson);
 						} catch (Exception e) {
-							timer.cancel();
+							// timer.cancel();
 							DialogNotify dialogLoadFail = new DialogNotify(
 									QuizActivity.this,
 									layString(R.string.load_data_no_Connect_title),
@@ -190,14 +191,14 @@ public class QuizActivity extends Application implements OnClickListener {
 								@Override
 								public void onOKClick() {
 									finish();
-									timer.cancel();
+									// timer.cancel();
 
 								}
 
 								@Override
 								public void onCancelClick() {
 									finish();
-									timer.cancel();
+									// timer.cancel();
 								}
 							};
 
@@ -207,24 +208,7 @@ public class QuizActivity extends Application implements OnClickListener {
 				};
 				downloadZip.execute();
 			} else {
-				DialogNotify dialogNoConnect = new DialogNotify(
-						QuizActivity.this,
-						layString(R.string.load_data_no_Connect_title),
-						layString(R.string.load_data_no_Connect_mgs),
-						layString(R.string.closeact)) {
-
-					@Override
-					public void onOKClick() {
-						finish();
-
-					}
-
-					@Override
-					public void onCancelClick() {
-						finish();
-
-					}
-				};
+				showDialogNoConnect();
 			}
 
 		} else {
@@ -253,16 +237,45 @@ public class QuizActivity extends Application implements OnClickListener {
 
 	}
 
+	void showDialogNoConnect() {
+
+		DialogNotify dialogNoConnect = new DialogNotify(QuizActivity.this,
+				layString(R.string.load_data_no_Connect_title),
+				layString(R.string.load_data_no_Connect_mgs),
+				layString(R.string.closeact)) {
+
+			@Override
+			public void onOKClick() {
+				finish();
+
+			}
+
+			@Override
+			public void onCancelClick() {
+				finish();
+
+			}
+		};
+
+	}
+
 	void loadDataToView(File fileJson) {
-		DoQuiz.exam = new Exam();
-		DoQuiz.exam.listQuestion = JsonParse.listQuestion(fileJson, year, type);
-		DoQuiz.exam.scoreWrong = 0;
-		DoQuiz.exam.scoreRight = 0;
-		DoQuiz.exam.time = 0;
-		DoQuiz.exam.sumaryAnswer = 0;
-		loadCustomView();
-		initView();
-		loadSlideMenu();
+
+		List<Question> questions = JsonParse.listQuestion(fileJson, year, type);
+		if (questions != null) {
+			DoQuiz.exam = new Exam();
+			DoQuiz.exam.listQuestion = questions;
+			DoQuiz.exam.scoreWrong = 0;
+			DoQuiz.exam.scoreRight = 0;
+			DoQuiz.exam.time = 0;
+			DoQuiz.exam.sumaryAnswer = 0;
+			loadCustomView();
+			initView();
+			loadSlideMenu();
+		} else {
+			showDialogNoConnect();
+		}
+
 	}
 
 	/**
@@ -506,7 +519,7 @@ public class QuizActivity extends Application implements OnClickListener {
 		} else if (item.getItemId() == R.id.menuCheck) {
 
 			int count = countClickCache.getCount();
-			if (count < 5) {
+			if (count == 4) {
 				displayInterstitial();
 			}
 			countClickCache.saveIncreateCount();
