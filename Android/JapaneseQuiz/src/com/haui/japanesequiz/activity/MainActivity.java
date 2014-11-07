@@ -75,38 +75,56 @@ public class MainActivity extends ActionBarActivity {
 
 				@Override
 				public void onDownloadComplete() {
-					File file = getmFile();
-					newVersion = JsonParse.getVersion(file);
+					
+					try {
 
-					// version mới khác version cũ thì sẽ lưu lại và tải lại
-					// danh sách các năm
-					if (newVersion != null) {
-						if (!versionCache.getVersion().equals(newVersion)) {
-							versionCache.saveVersion(newVersion);
-							// xóa các file dữ liệu trong thư mục JLPT
-							FileUntils.deleteFolder(new File(
-									Variable.FILE_DIRECTORY));
-							dowloadListQuiz();
-						} else {
+						File file = getmFile();
+						newVersion = JsonParse.getVersion(file);
 
-							// Nếu version giống nhau thì kiểm tra xem danh sách
-							// đề
-							// các năm đã có chưa
-							if (quizlistCache.getListQuiz() == null) {
-
-								// nếu chưa có đề thì tiến hành download danh
-								// sách
-								// đề
+						// version mới khác version cũ thì sẽ lưu lại và tải lại
+						// danh sách các năm
+						if (newVersion != null) {
+							if (!versionCache.getVersion().equals(newVersion)) {
+								versionCache.saveVersion(newVersion);
+								// xóa các file dữ liệu trong thư mục JLPT
+								FileUntils.deleteFolder(new File(
+										Variable.FILE_DIRECTORY));
 								dowloadListQuiz();
+							} else {
+
+								// Nếu version giống nhau thì kiểm tra xem danh sách
+								// đề
+								// các năm đã có chưa
+								if (quizlistCache.getListQuiz() == null) {
+
+									// nếu chưa có đề thì tiến hành download danh
+									// sách
+									// đề
+									dowloadListQuiz();
+								}
+
 							}
+					} else {
+						CommonUtils.showToast(getApplicationContext(), "version null");
+							//showDialogNoData();
 
 						}
-				} else {
-						showDialogNoData();
 
+						initView();
+					} catch (Exception e) {
+						CommonUtils.showToast(getApplicationContext(), "Kết nối mạng lỗi không thể tải dữ liệu mới về");
+
+
+						if (quizlistCache.getListQuiz() == null) {
+
+							showDialogNoData();
+						}
+
+						initView();
+
+					
 					}
-
-					initView();
+					
 				}
 
 			};

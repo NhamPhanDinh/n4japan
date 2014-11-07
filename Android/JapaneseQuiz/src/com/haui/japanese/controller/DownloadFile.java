@@ -58,7 +58,7 @@ public abstract class DownloadFile extends AsyncTask<Void, String, File> {
 		try {
 			URL url = new URL(this.url);
 			URLConnection conexion = url.openConnection();
-			conexion.setConnectTimeout(300000);
+			conexion.setConnectTimeout(10000);
 			conexion.connect();
 
 			int lenghtOfFile = conexion.getContentLength();
