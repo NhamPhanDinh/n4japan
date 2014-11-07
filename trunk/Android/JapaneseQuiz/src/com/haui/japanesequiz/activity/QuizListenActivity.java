@@ -1,6 +1,7 @@
 package com.haui.japanesequiz.activity;
 
 import java.io.File;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -166,18 +167,26 @@ public class QuizListenActivity extends Application {
 					@Override
 					public void onDownloadComplete() {
 						File fileDownload = getmFile();
+						
+						try {
+							FileUntils.ExtractFile(fileDownload, new File(
+									Variable.FILE_DIRECTORY), passExtractCache
+									.getPass());
+							dataToView(fileJson);
+						} catch (Exception e) {
+							//Toast.makeText(getApplicationContext(), e.toString(), Toast.LENGTH_LONG).show();
+							showDialogNoConnect();
+							FileUntils.deleteFile(fileDownload);
+						}
 
-						FileUntils.ExtractFile(fileDownload, new File(
-								Variable.FILE_DIRECTORY), passExtractCache
-								.getPass());
-						dataToView(fileJson);
-						if (DoQuiz.exam.getListQuestion() == null) {
+						
+					/*	if (DoQuiz.exam.getListQuestion() == null) {
 							showDialogNoConnect();
 							FileUntils.deleteFile(fileDownload);
 						} else {
 							loadAudio();
 						}
-
+*/
 					}
 				};
 				downloadZip.execute();
@@ -226,7 +235,7 @@ public class QuizListenActivity extends Application {
 					passExtractCache.getPass());
 			dataToView(fileJson);
 
-			loadAudio();
+			//loadAudio();
 
 		}
 
@@ -253,13 +262,18 @@ public class QuizListenActivity extends Application {
 	}
 
 	void dataToView(File file) {
-
-		DoQuiz.exam = new Exam();
-		DoQuiz.exam.listQuestion = JsonParse.listQuestion(file, year, type);
-		DoQuiz.exam.scoreWrong = 0;
-		DoQuiz.exam.scoreRight = 0;
-		DoQuiz.exam.time = 0;
-		DoQuiz.exam.sumaryAnswer = 0;
+		List<Question> questions = JsonParse.listQuestion(file, year, type);
+		if (questions == null) {
+			showDialogNoConnect();
+		} else {
+			DoQuiz.exam = new Exam();
+			DoQuiz.exam.listQuestion = questions;
+			DoQuiz.exam.scoreWrong = 0;
+			DoQuiz.exam.scoreRight = 0;
+			DoQuiz.exam.time = 0;
+			DoQuiz.exam.sumaryAnswer = 0;
+			loadAudio();
+		}
 	}
 
 	void loadAudio() {

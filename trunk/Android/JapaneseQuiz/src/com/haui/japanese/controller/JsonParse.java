@@ -72,21 +72,23 @@ public class JsonParse {
 	}
 
 	public static List<Question> listQuestion(File file, int year, int type) {
-		String link = null;
-		String title = null;
-		if (type == 1) {
-			title = "Voc";
-			link = Variable.HOST_DATA + year + "/Vocabulary/";
-		} else if (type == 2) {
-			title = "Gra";
-			link = Variable.HOST_DATA + year + "/Grammar/";
-		} else if (type == 3) {
-			link = Variable.HOST_DATA + year + "/Listerning/";
-		}
-
-		String jsonString = FileUntils.readFileText(file);
 		List<Question> listQuestion = new ArrayList<Question>();
 		try {
+			String link = null;
+			String title = null;
+			if (type == 1) {
+				title = "Voc";
+				link = Variable.HOST_DATA + year + "/Vocabulary/";
+			} else if (type == 2) {
+				title = "Gra";
+				link = Variable.HOST_DATA + year + "/Grammar/";
+			} else if (type == 3) {
+				link = Variable.HOST_DATA + year + "/Listerning/";
+			}
+
+			String jsonString = FileUntils.readFileText(file);
+			
+
 			JSONArray jsonArray = new JSONArray(jsonString);
 			for (int i = 0; i < jsonArray.length(); i++) {
 				Question qt = new Question();
